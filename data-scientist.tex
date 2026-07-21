@@ -1,0 +1,180 @@
+%-------------------------
+% Career-Ops LaTeX CV Template
+% Based on: Gabriel Sison / sb2nov resume template
+% License: MIT
+%------------------------
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Random Stuff %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[letterpaper,11pt]{article}
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome}
+\usepackage{multicol}
+\setlength{\multicolsep}{-3.0pt}
+\setlength{\columnsep}{-1pt}
+% glyphtounicode is a pdfTeX facility. Tectonic runs XeTeX, which has no
+% \pdfgentounicode primitive and derives the ToUnicode map from the fonts
+% instead. Guard so the template renders under either engine.
+\ifdefined\pdfgentounicode
+  \input{glyphtounicode}
+\fi
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.6in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1.19in}
+\addtolength{\topmargin}{-.7in}
+\addtolength{\textheight}{1.4in}
+\urlstyle{same}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-7pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{0pt}]
+% Ensure the generated pdf is machine readable / ATS parsable
+\ifdefined\pdfgentounicode
+  \pdfgentounicode=1
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Commands  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Bullet item. Two things here are load-bearing for ATS parsing, do not
+% "tidy" them away:
+%   1. No stray spaces or newlines inside the macro body. A space before the
+%      \vspace lands in horizontal mode and can push an empty line box onto the
+%      page, which shows up as a mystery gap between bullets.
+%   2. \linespread tightens leading INSIDE a bullet so that the gap between a
+%      bullet's wrapped lines stays smaller than the gap between two bullets.
+%      pdftotext infers paragraph breaks from relative line spacing, so if that
+%      ordering inverts, every wrapped bullet extracts as two separate
+%      paragraphs and ATS parsers read one bullet as two records.
+% scripts/measure_spacing.py verifies both properties.
+\newcommand{\resumeItem}[1]{\item{\small\linespread{0.85}\selectfont #1\par}\vspace{0.5pt}}
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-3pt}\item
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & \textbf{\small #2} \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+\newcommand{\resumeSubheadingContinue}[2]{
+  \vspace{-3pt}
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+\newcommand{\resumeProjectHeading}[2]{
+  \vspace{-3pt}\item
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & \textbf{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{0pt}}
+\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{0pt}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Heading  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+    \begin{center}
+        % NAME
+        {\Huge\scshape Tath Sikdar}
+        % SUBHEADING
+        \\ Mississauga, ON\\
+        \small
+        % EMAIL
+        \href{mailto:rikisikdar1@gmail.com}{\raisebox{-0.2\height}\faEnvelope\  \underline{rikisikdar1@gmail.com}} ~
+        % LINKEDIN
+        \href{https://www.linkedin.com/in/tathagata-sikdar}{\raisebox{-0.2\height}\faLinkedin\ \underline{linkedin.com/in/tathagata-sikdar}}  ~
+        % GITHUB
+        \href{https://github.com/tathsikdar}{\raisebox{-0.2\height}\faGithub\ \underline{github.com/tathsikdar}}
+    \end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Education  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Education}
+  \resumeSubHeadingListStart
+\resumeSubheading
+  {McMaster University}{Sep 2021 - Apr 2026}
+  {B.Eng in Mechatronics Engineering Co-op}{Hamilton, Ontario}
+  \resumeSubHeadingListEnd
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Experience  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Work Experience}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Nestlé Canada}{Apr 2024 - Dec 2025}
+      {Data Scientist Co-op}{Toronto, ON}
+      \resumeItemListStart
+        \resumeItem{Centralized \textbf{14} competitor data sources into a \textbf{PostgreSQL} warehouse by building \textbf{Python} \textbf{ETL} \textbf{data pipelines} with custom \textbf{data cleaning} rules, cutting duplicate listings \textbf{23\%} and ending double counted price moves.}
+        \resumeItem{Deployed a production-ready \textbf{machine learning} \textbf{classification} model over 40,000+ SKUs at \textbf{94\%} accuracy against a \textbf{71\%} majority-class baseline, by training \textbf{scikit-learn} on \textbf{TF-IDF} features engineered in \textbf{Pandas}.}
+        \resumeItem{Replaced a manual weekly \textbf{Excel} reporting process with self-serve \textbf{Power BI} and \textbf{Tableau} dashboards on a star-schema \textbf{SQL} warehouse, returning roughly \textbf{6} analyst hours a week across \textbf{500+} enterprise users.}
+        \resumeItem{Diagnosed a \textbf{9\%} degradation in categorization precision caused by an unannounced supplier feed change, utilizing \textbf{model drift monitoring} and \textbf{K-means} \textbf{clustering} of misclassified SKUs to prevent downstream data disruption.}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Chase Auto Parts}{Sep 2023 - Apr 2024}
+      {Associate Data Scientist Co-op}{Mississauga, ON}
+      \resumeItemListStart
+        \resumeItem{Cut part-identification errors \textbf{57\%} against the incumbent lookup flow through \textbf{feature engineering} on an existing live transcription feed, scoring precision and recall on a held-out set of 4K annotated conversations.}
+        \resumeItem{Ruled out \textbf{SARIMA} and Prophet for time series demand \textbf{forecasting} after benchmarking both in \textbf{Python} and \textbf{R}; only a \textbf{gradient boosting} model beat the incumbent reorder rule, cutting projected stockouts \textbf{18\%} in backtest.}
+        \resumeItem{Traced most of the cloud bill to three query patterns through \textbf{exploratory data analysis} and \textbf{data wrangling} of raw \textbf{Azure} telemetry; rewriting those sync jobs with platform engineering cut redundant calls \textbf{60\%}.}
+        \resumeItem{Engineered a fault-tolerant, cross-platform (\textbf{Linux}/\textbf{Windows}) nightly forecast pipeline by implementing idempotent writes and automated \textbf{data quality} checks to eliminate data gaps and prevent inventory double-counting during reruns.}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Fanique Group}{May 2023 - Sep 2023}
+      {Data Science Intern}{Toronto, ON}
+      \resumeItemListStart
+        \resumeItem{Increased user session duration \textbf{25\%} by identifying the winning onboarding flow from a 6-variant \textbf{A/B test}, sizing each cohort for \textbf{80\%} power and grounding the readout in applied \textbf{statistics} and \textbf{statistical modeling}.}
+        \resumeItem{Isolated a \textbf{30\%} Day-7 retention gap between web and mobile cohorts by instrumenting a typed cross-platform event schema, then running \textbf{cohort} and \textbf{survival analysis} in \textbf{Python} to scope the product fix the team shipped.}
+      \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%  PROJECTS  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Personal Projects}
+\resumeSubHeadingListStart
+    \resumeProjectHeading
+      {\textbf{Conformal-Cashflow: Liquidity Forecasting} $|$ \emph{Python, PyTorch, Conformal Prediction, SQL, Docker}}{}
+      \resumeItemListStart
+        \resumeItem{Achieved \textbf{90\% conformal coverage (PICP)} on liquidity forecasts by building a two-stage hurdle model, a classification gate feeding a quantile head, to put calibrated intervals around every prediction rather than a point estimate.}
+        \resumeItem{Scaled training to \textbf{1.1M} transaction records by engineering per-account normalization, cyclical time encodings, and \textbf{FFT} spectral features in \textbf{NumPy} and \textbf{SciPy}, holding sharpness across heterogeneous accounts.}
+      \resumeItemListEnd
+
+    \resumeProjectHeading
+      {\textbf{RouteWise: Fuel Economy Prediction} $|$ \emph{Python, LightGBM, Random Forest, Optuna, SHAP, SQLite}}{}
+      \resumeItemListStart
+        \resumeItem{Improved fuel-economy $R^2$ from \textbf{0.42} to \textbf{0.84} by cascading two \textbf{regression} models to separate congestion effects from vehicle physics, using Vehicle Specific Power as the bridging feature across 260+ vehicles.}
+        \resumeItem{Tuned the \textbf{LightGBM} and \textbf{Random Forest} ensemble with \textbf{Optuna} Bayesian search, then read \textbf{SHAP} attributions to confirm the model leaned on road grade and speed variance rather than dataset collection artifacts.}
+      \resumeItemListEnd
+\resumeSubHeadingListEnd
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Technical Skills  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Technical Skills}
+\vspace{-7pt}
+\begin{itemize}
+[leftmargin=0.15in, label={}]\small{\item{
+\textbf{Languages}{: Python, SQL, R, Scala, Julia, Java, C, C++} \\
+\textbf{Libraries}{: scikit-learn, PyTorch, LightGBM, PySpark, Pandas, NumPy, SciPy, Optuna, SHAP, Matplotlib} \\
+\textbf{Methods}{: Random Forest, A/B testing, experimental design, statistical modeling, conformal prediction, cohort analysis, survival analysis, statistics, regression, classification, clustering, forecasting, SARIMA} \\
+\textbf{Platforms}{: Power BI, PostgreSQL, Databricks, SQLite, Tableau, Excel, MATLAB, Azure, AWS, GCP, Docker}
+}}
+\end{itemize}
+
+\end{document}

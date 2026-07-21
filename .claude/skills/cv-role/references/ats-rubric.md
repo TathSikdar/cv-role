@@ -27,8 +27,16 @@ condition to be literally true in the extracted text.
 ### 1. Hard keyword coverage — 30 pts
 
 Build the keyword set first: extract every hard requirement term from the
-listings (languages, frameworks, platforms, tools, methods, domain nouns). Weight
-a term by how many listings contain it. Then measure coverage in the CV text.
+listings (languages, frameworks, platforms, tools, methods, domain nouns), giving
+priority to each listing's explicit `Technologies required:` line. Weight a term
+by how many listings contain it. Then measure coverage in the CV text.
+
+**Education and degree vocabulary is out of scope.** Do not treat degree level,
+field of study, or credential terms as keywords, and never deduct for their
+absence. Education is frozen and cannot be tuned, so scoring it measures nothing
+the pipeline can act on. Listings requiring a Master's or higher should already
+have been filtered out of the benchmark; if you see one, note it and exclude its
+terms from the keyword set.
 
 | Score | Anchor |
 |---|---|

@@ -65,7 +65,7 @@ roles:
 # file, so a regression is always visible in the trajectory.
 # ---------------------------------------------------------------------------
 loop:
-  max_iterations: 3
+  max_iterations: 10
   ats_threshold: 90        # out of 100, per references/ats-rubric.md
 
   # Set to 80, not 85, deliberately. The recruiter rubric deducts for uniform
@@ -73,7 +73,7 @@ loop:
   # rules below (exactly two rendered lines per bullet, page filled) require.
   # Roughly 5 points are therefore unreachable while those rules stand. Raise
   # this only if you also relax `bullet_lines`.
-  recruiter_threshold: 80  # out of 100, per references/recruiter-rubric.md
+  recruiter_threshold: 90  # out of 100, per references/recruiter-rubric.md
 
   # Abort the role and report if a single iteration drops more than this many
   # points versus the previous iteration on either rubric. Prevents the loop
@@ -87,9 +87,54 @@ loop:
 # a refresh on the next run.
 # ---------------------------------------------------------------------------
 listings:
-  per_role: 6              # target count when building a cache file
-  min_required: 4          # below this, warn — the benchmark is too thin
+  per_role: 20             # target count when building a cache file
+  min_required: 10          # below this, warn — the benchmark is too thin
   refresh: false           # true = re-fetch even if a cache file exists
+
+  # ELIGIBILITY FILTER — applied before a posting is written to the cache.
+  #
+  # The filter exists for exactly one reason: education level and years-of-
+  # experience floors are the requirements a CV rewrite can NEVER satisfy, so
+  # scoring against them drags keyword coverage toward vocabulary that cannot
+  # legitimately be claimed. Title terms are here because a title places a
+  # posting above the band regardless of what it claims to require.
+  #
+  # The three tests below are the WHOLE filter. Do not invent additional ones.
+  # Specifically NOT grounds for exclusion:
+  #   - security clearance required
+  #   - citizenship or work-authorization requirements
+  #   - country, city, onsite/remote
+  #   - an industry or domain the candidate has not worked in
+  # The benchmark measures what the MARKET asks for, so it can be used as an ATS
+  # checker. It is not a shortlist of jobs to apply to. A cleared defense posting
+  # and an unreachable-city posting both carry valid skill vocabulary. When in
+  # doubt, KEEP the posting: a benchmark that is slightly too permissive costs a
+  # few points of measured coverage, while one that is too strict silently
+  # narrows the vocabulary the entire pipeline optimizes toward.
+  eligibility:
+    # Highest degree the posting may require. Education is frozen in
+    # frozen.yaml, so a degree requirement is the one thing CV rewriting can
+    # never satisfy. One of: none | bachelors | masters | phd
+    max_degree: bachelors
+
+    # Maximum years of professional experience a posting may demand. Postings
+    # stating a higher floor (e.g. "5+ years", "12+ years") are excluded.
+    # Postings that state no requirement are eligible.
+    max_years_experience: 3
+
+    # Titles that place a posting above the band regardless of its stated
+    # requirements. Matched case-insensitively against the job title.
+    # Note: "Engineer I", "Level I", and "Tier I" are IN band — see `level`.
+    exclude_title_terms:
+      - senior
+      - staff
+      - principal
+      - architect
+      - lead
+      - director
+      - head of
+      - manager
+      - Sr.
 
 # ---------------------------------------------------------------------------
 # LAYOUT BUDGET
@@ -114,8 +159,7 @@ layout:
   text_bottom_pt: 770.4
 
   # Rendered lines each bullet must occupy, measured from the PDF. Three lines
-  # is a wall of text a recruiter skips; one line wastes the row. Exactly two.
-  bullet_lines: [2, 2]
+  bullet_lines: [1, 2]
 
   # How full the bullet's final line should be, as a fraction of column width.
   # The sweet spot is a bullet that runs close to the end of line two. Falling
@@ -131,3 +175,11 @@ layout:
   project_count: [2, 3]
   bullets_per_project: [2, 4]
   skill_groups: [3, 4]
+
+  # Maximum words in a skill group's LABEL (the bit before the colon). One word.
+  # Labels carry no keyword weight their items do not already carry, so a long
+  # one ("Machine Learning, Statistics & Experimentation") spends a third of the
+  # line on a signpost and wraps the items onto an extra line. Use `Modeling`,
+  # `Statistics`, `Platforms`, `Languages`. A group that cannot be named in one
+  # word should be split, or its items moved.
+  skill_label_max_words: 1

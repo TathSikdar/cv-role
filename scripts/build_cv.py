@@ -206,6 +206,29 @@ def build_skills(content: dict) -> tuple[str, list[str]]:
     return " \\\\\n".join(lines), problems
 
 
+def build_education(frozen: dict, content: dict) -> str:
+    """Frozen subheading, plus the coursework bullet unless the role drops it.
+
+    The bullet's wording is frozen; only its presence is the generator's call.
+    `education_bullet: false` in content.yaml omits it. See SKILL.md.
+    """
+    block = frozen.get("education_latex", "").rstrip()
+
+    if content.get("education_bullet", True) is False:
+        return block
+
+    bullet = (frozen.get("education_bullet") or "").strip()
+    if not bullet:
+        return block
+
+    return (
+        f"{block}\n"
+        f"    \\resumeItemListStart\n"
+        f"      \\resumeItem{{{bullet}}}\n"
+        f"    \\resumeItemListEnd"
+    )
+
+
 def render_template(frozen: dict, content: dict) -> tuple[str, list[str]]:
     template = (CONFIG / "cv-template.tex").read_text(encoding="utf-8")
 
@@ -223,7 +246,7 @@ def render_template(frozen: dict, content: dict) -> tuple[str, list[str]]:
         "LINKEDIN_DISPLAY": contact.get("linkedin_display", ""),
         "GITHUB_URL": contact.get("github_url", ""),
         "GITHUB_DISPLAY": contact.get("github_display", ""),
-        "EDUCATION": frozen.get("education_latex", "").rstrip(),
+        "EDUCATION": build_education(frozen, content),
         "EXPERIENCE": experience,
         "PROJECTS": projects,
         "SKILLS": skills,
@@ -277,7 +300,8 @@ def normalize(text: str) -> str:
     return re.sub(r"[ \t ]+", " ", text)
 
 
-def verify_frozen(frozen: dict, extracted: str) -> list[str]:
+def verify_frozen(frozen: dict, extracted: str, content: dict | None = None) -> list[str]:
+    content = content or {}
     """Confirm every frozen fact survived generation and rendering intact."""
     failures: list[str] = []
     flat = normalize(extracted)
@@ -296,6 +320,15 @@ def verify_frozen(frozen: dict, extracted: str) -> list[str]:
         probe = literal.replace("\\&", "&").strip()
         if probe and probe not in flat:
             failures.append(f"frozen education text missing from rendered PDF: '{probe}'")
+
+    # The coursework bullet may be dropped, but if the role kept it, its wording
+    # is frozen: verify it rendered verbatim rather than reworded.
+    if content.get("education_bullet", True) is not False:
+        probe = (frozen.get("education_bullet") or "").replace("\\&", "&").strip()
+        if probe and probe not in flat:
+            failures.append(
+                f"frozen education bullet missing from rendered PDF: '{probe}'"
+            )
 
     # Scan with newlines collapsed too: a date range wrapped across two lines by
     # the renderer would otherwise slip past the allowlist.
@@ -502,6 +535,110 @@ def check_divergence(content: dict, master_path: Path) -> list[str]:
 
 
 # --------------------------------------------------------------------------
+# XYZ structure
+# --------------------------------------------------------------------------
+
+# Past-tense achievement verbs that do not end in -ed. Anything ending in -ed is
+# accepted without listing it, so this only has to cover the irregulars that
+# actually open CV bullets.
+IRREGULAR_VERBS = {
+    "built", "cut", "led", "ran", "wrote", "drove", "grew", "won", "made",
+    "found", "held", "set", "sped", "took", "brought", "caught", "taught",
+    "sent", "kept", "split", "chose", "rose", "fell", "shrank", "beat", "met",
+    "rebuilt", "shipped", "swept", "spun", "dealt", "put", "left", "began",
+}
+
+# Connectors that introduce the mechanism (Z). Deliberately permissive: the
+# mechanism may be a gerund clause ("by building a pipeline") or a plain noun
+# phrase ("with Optuna Bayesian search"), and distinguishing a real mechanism
+# from a passing preposition is not something a regex can do honestly. This
+# catches the bullet that states an outcome and stops.
+MECHANISM = re.compile(
+    r"\b(by|through|via|using|utilizing|leveraging|after|with|from)\b", re.I
+)
+
+# Y does not have to be a figure. The rule allows "a verifiable qualitative
+# outcome ... never a vague intensifier", so these are the constructions that
+# state an outcome a reader could check: a thing eliminated, prevented, ruled
+# out, or confirmed. Matching one downgrades a missing figure to a warning.
+#
+# This exists because the diagnostic bullets that legitimately carry no
+# percentage are the ones the recruiter rubric rewards as most credible, and a
+# hard failure was pushing them toward manufactured metrics — which the same
+# rubric then penalizes as uniform win magnitude.
+QUALITATIVE_OUTCOME = re.compile(
+    r"\b(to (eliminate|prevent|avoid|confirm|rule out|surface|catch|hold)"
+    r"|without|before (release|anyone|it)|so (that|a|it)"
+    r"|eliminating|preventing|ruling out|confirming)\b",
+    re.I,
+)
+
+
+def check_xyz(content: dict) -> tuple[list[str], list[str]]:
+    """Check every bullet for XYZ structure: accomplished X, measured by Y, doing Z.
+
+    Returns (failures, warnings).
+
+    Y and Z are hard failures because their absence is unambiguous — a bullet
+    with no figure anywhere in it has no measure, and one with no mechanism
+    connector never says how. X is a warning only: whether the opening word is
+    a genuine achievement verb is a judgement the graders make better than a
+    word list does.
+
+    Known limitation: Y is satisfied by any digit, so an incidental number
+    ("Day-7", "two-stage") passes. Deliberate — a false pass costs a grader
+    comment, a false failure blocks a build on a correct bullet.
+    """
+    failures: list[str] = []
+    warnings: list[str] = []
+
+    def bullets() -> list[tuple[str, str]]:
+        out = []
+        for job in content.get("experience", []):
+            for i, b in enumerate(job.get("bullets", [])):
+                out.append((f"experience[{job.get('id')}].bullets[{i}]", b))
+        for j, proj in enumerate(content.get("projects", [])):
+            for i, b in enumerate(proj.get("bullets", [])):
+                out.append((f"projects[{j}].bullets[{i}]", b))
+        return out
+
+    for where, bullet in bullets():
+        # Strip \textbf{...} and stray LaTeX so markup neither hides a figure
+        # nor supplies a false one.
+        plain = re.sub(r"\\[a-zA-Z]+\{([^{}]*)\}", r"\1", bullet)
+        plain = re.sub(r"[\\${}^]", "", plain).strip()
+        excerpt = plain[:60] + ("..." if len(plain) > 60 else "")
+
+        if not re.search(r"\d", plain):
+            if QUALITATIVE_OUTCOME.search(plain):
+                warnings.append(
+                    f"{where}: no figure, carried by a qualitative outcome "
+                    f"instead (Y): \"{excerpt}\"\n"
+                    "      fine if no number genuinely exists; confirm it is "
+                    "not a vague intensifier"
+                )
+            else:
+                failures.append(
+                    f"{where}: no quantified result (Y): \"{excerpt}\"\n"
+                    "      add a metric, or a verifiable qualitative outcome"
+                )
+        if not MECHANISM.search(plain):
+            failures.append(
+                f"{where}: no mechanism clause (Z): \"{excerpt}\"\n"
+                "      say how it was done (by/through/using ...)"
+            )
+
+        first = re.sub(r"[^a-z]", "", plain.split(" ")[0].lower()) if plain else ""
+        if first and not first.endswith("ed") and first not in IRREGULAR_VERBS:
+            warnings.append(
+                f"{where}: does not open with a past-tense achievement verb "
+                f"(X): \"{excerpt}\""
+            )
+
+    return failures, warnings
+
+
+# --------------------------------------------------------------------------
 # main
 # --------------------------------------------------------------------------
 
@@ -526,6 +663,18 @@ def main(argv: list[str]) -> int:
             print(f"  - {h}")
         return 1
 
+    # Checked before rendering: this is a content rule, so there is no reason to
+    # spend a tectonic run proving a bullet that is already malformed.
+    xyz_failures, xyz_warnings = check_xyz(content)
+    for w in xyz_warnings:
+        print(f"[warn] {w}")
+    if xyz_failures:
+        print("[FAIL] XYZ structure:")
+        for f in xyz_failures:
+            print(f"  - {f}")
+        print("\nEvery bullet: accomplished X, as measured by Y, by doing Z.")
+        return 1
+
     tex_path = ROOT / f"{slug}.tex"
     pdf_path = ROOT / f"{slug}.pdf"
     out_dir = BUILD / slug
@@ -544,7 +693,7 @@ def main(argv: list[str]) -> int:
         print(f"[FAIL] {exc}")
         return 1
 
-    failures = verify_frozen(frozen, extracted)
+    failures = verify_frozen(frozen, extracted, content)
     if failures:
         print("[FAIL] frozen-fact verification failed:")
         for f in failures:

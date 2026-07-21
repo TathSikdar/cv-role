@@ -26,15 +26,24 @@ contact:
   github_url: "https://github.com/tathsikdar"
 
 # ---------------------------------------------------------------------------
-# EDUCATION — injected verbatim as LaTeX. Fully frozen, including the bullet.
+# EDUCATION — injected verbatim as LaTeX. The institution, degree, dates and
+# location are fully frozen and always rendered.
 # ---------------------------------------------------------------------------
 education_latex: |
   \resumeSubheading
     {McMaster University}{Sep 2021 - Apr 2026}
     {B.Eng in Mechatronics Engineering Co-op}{Hamilton, Ontario}
-    \resumeItemListStart
-      \resumeItem{Coursework: Embedded, Robotics, DSP, RTOS, DSA | Formula Electric (Software \& Controls)}
-    \resumeItemListEnd
+
+# The coursework line. Frozen in WORDING — never reworded, never retargeted at a
+# role, because that would misrepresent what the degree actually contained.
+#
+# But it is OPTIONAL. A role may drop it entirely by setting
+# `education_bullet: false` in build/<slug>/content.yaml. Omitting a true fact
+# is not misrepresentation; rewriting it would be. See SKILL.md, "The education
+# coursework bullet may be dropped".
+#
+# Default is to include it.
+education_bullet: 'Coursework: Embedded, Robotics, DSP, RTOS, DSA | Formula Electric (Software \& Controls)'
 
 # ---------------------------------------------------------------------------
 # WORK EXPERIENCE — company / dates / location are frozen. The generator

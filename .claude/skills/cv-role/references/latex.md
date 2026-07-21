@@ -17,6 +17,12 @@ Non-zero exit means the build failed — never grade or proceed past a failure.
 ## content.yaml schema
 
 ```yaml
+# Optional. Omit or set true to keep the frozen coursework line under Education;
+# set false to drop it. Its WORDING is never yours to change either way — only
+# whether it appears. See SKILL.md, "The education coursework bullet may be
+# dropped". Dropping it frees one rendered line that must be refilled.
+education_bullet: false
+
 experience:
   # Every id from config/frozen.yaml, same order, none added or removed.
   # You supply ONLY title and bullets. Company, dates and location come from
@@ -41,9 +47,13 @@ projects:
 
 skills:
   # Free rein, including technologies not on the master CV.
+  # LABELS ARE ONE WORD (layout.skill_label_max_words). The label is a signpost
+  # and carries no keyword weight its items do not already carry, so a compound
+  # label wastes a third of the line and wraps the items. Split the group or
+  # move its items rather than reaching for "Frameworks & Orchestration".
   - label: "Languages"
     items: "Python, TypeScript, Go, C++, SQL"
-  - label: "Agent Frameworks"
+  - label: "Agents"
     items: "LangGraph, LangChain, MCP, AutoGen"
 ```
 

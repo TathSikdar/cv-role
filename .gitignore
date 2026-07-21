@@ -11,3 +11,5 @@ __pycache__/
 # Generated CVs are committed on purpose — they are the deliverable.
 # Extracted text is a derived intermediate.
 build/*/*.txt
+
+config/job-listings/

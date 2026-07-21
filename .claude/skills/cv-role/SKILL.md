@@ -31,7 +31,8 @@ Non-negotiable, and enforced mechanically by `scripts/build_cv.py`:
 
 | Element | Rule |
 |---|---|
-| Education | **Frozen.** Injected verbatim from `config/frozen.yaml`. Never touched. |
+| Education (institution, degree, dates, location) | **Frozen.** Injected verbatim from `config/frozen.yaml`. Never touched. |
+| Education coursework bullet | **Wording frozen, presence optional.** Never reworded. May be dropped whole — see below. |
 | Company names, dates, locations | **Frozen.** Injected from `config/frozen.yaml`. You never write them. |
 | Number and order of jobs | **Frozen.** No adding, dropping, or reordering. |
 | Position titles | Free — retarget to the role's vocabulary. |
@@ -52,13 +53,73 @@ Check `config/job-listings/<slug>.md`.
 
 If it is missing (or `listings.refresh` is true), build it: use WebSearch with
 the role's `search_terms` plus the configured `level`, gather `listings.per_role`
-real postings, and write the file as one `##` section per listing containing
-company, title, and the requirements and responsibilities text verbatim. Do not
-paraphrase — the ATS grader extracts keywords from this text and paraphrasing
-launders exactly the vocabulary being measured.
+real postings, and write the file as one `##` section per listing.
 
-Warn and continue if you can only gather `listings.min_required`; below that,
-stop and tell the user.
+### Eligibility filter — apply before writing anything
+
+The benchmark must contain only jobs this candidate could actually get. Scoring
+against unreachable postings drags keyword coverage toward vocabulary that
+cannot legitimately be claimed, and makes seniority calibration meaningless.
+
+Drop a posting if any of these is true, per `listings.eligibility` in the config:
+
+| Test | Default | Reason |
+|---|---|---|
+| Requires a degree above `max_degree` | above Bachelor's | Education is frozen in `config/frozen.yaml`. A degree requirement is the one thing CV rewriting can never satisfy. |
+| Demands more than `max_years_experience` | more than 3 years | A posting asking for "5+ years" or "12+ years" is not reachable from a co-op record, whatever the CV says. |
+| Title contains an `exclude_title_terms` entry | senior, staff, principal, architect, lead, director, head of, manager | The title places the role above the band regardless of stated requirements. |
+
+A posting that states no degree or no experience floor is **eligible** — silence
+is not disqualifying.
+
+**The three tests above are the whole filter. Do not invent additional ones.**
+In particular, these are *not* grounds for exclusion:
+
+| Not a reason to exclude | Why |
+|---|---|
+| Security clearance required | The benchmark measures what the market asks for, not what the candidate can be hired into tomorrow. A cleared posting's skill vocabulary is as valid a signal as any other. |
+| Citizenship or work authorization | Same. Visa and residency status are not CV-editable and not keyword-bearing. |
+| Country, city, or onsite/remote | Location narrows where you apply, not what the role is screened on. |
+| Industry or domain the candidate has not worked in | This is the *point* of a benchmark. An unfamiliar domain surfaces vocabulary gaps rather than disqualifying the posting. |
+
+The filter exists for one reason: education and years-of-experience floors are
+the requirements a CV rewrite can never satisfy, so scoring against them drags
+keyword coverage toward vocabulary that cannot legitimately be claimed. Nothing
+else in a posting has that property. When in doubt, keep the posting — a benchmark
+that is too permissive costs a few points of measured coverage, while one that is
+too strict silently narrows the vocabulary the whole pipeline optimizes toward.
+
+`Engineer I`, `Level I`, `Tier I`, junior, and associate titles are **in band**
+for `new-grad` and must not be excluded. See the `level` note in the config.
+
+If the filter leaves you below `listings.per_role`, search again with different
+terms rather than lowering the bar. Warn and continue at `listings.min_required`;
+below that, stop and tell the user.
+
+Record every exclusion in an `## Excluded postings` section at the bottom of the
+file with the company, title, and the specific reason, so a later refresh does
+not silently re-add it and so the filter's behaviour is auditable.
+
+### What to record per listing
+
+Each `##` section contains:
+
+1. Company, title, location, employment type
+2. **`Technologies required:`** an explicit comma-separated list of every
+   concrete technology, framework, platform, protocol, and named tool the
+   posting asks for. Pull these out even when the posting buries them in prose.
+   This list is what the ATS grader scores keyword coverage against, so it
+   should be extractable at a glance rather than hidden inside paragraphs.
+3. Requirements and responsibilities text, quoted **verbatim**. Do not
+   paraphrase — the grader extracts vocabulary from this text and paraphrasing
+   launders exactly what is being measured.
+
+**Omit degree and education requirements from the quoted text entirely.**
+"Bachelor's degree in computer science or related field" is not actionable
+content for this pipeline and should not appear in the file, because education
+is frozen and cannot be tuned toward it. Keep years-of-experience lines, since
+those inform seniority calibration even though they are also not directly
+editable.
 
 **These listings are cached and reused across every iteration and every rerun.**
 That is what makes scores comparable between iterations — if the benchmark moved,
@@ -92,6 +153,39 @@ Work bullet by bullet:
 4. Drop material that does not serve the role, and surface master-CV work that
    was buried. Bullet counts need not match the master.
 
+### The education coursework bullet may be dropped
+
+`config/frozen.yaml` carries the coursework line as `education_bullet`. Its
+**wording is frozen** — never reword it, never retarget it at the role, never
+swap in courses the degree did not contain. That would misrepresent a
+credential, which is the one thing this pipeline must never do.
+
+Its **presence is not frozen.** Set `education_bullet: false` in
+`build/<slug>/content.yaml` to drop it. Omitting a true fact is an editorial
+choice every candidate makes; rewriting it is fabrication. Only the second is
+off limits.
+
+**The test: does the bullet earn its line?** Keep it only if it raises the ATS
+or the recruiter score. It fails that test whenever the coursework points away
+from the target role, which is common — a degree that was excellent preparation
+for one role family often lists nothing a different family screens on, and the
+line then sits in the highest-value real estate on the page arguing for a job
+the candidate is not applying to. Both rubrics punish this: the recruiter under
+six-second scan and role-narrative coherence, the ATS indirectly, because the
+line consumes space that role-relevant content would otherwise fill.
+
+When it is genuinely mixed, prefer keeping it. A CV with no coursework line is
+unremarkable; the decision only matters when the line is actively working
+against the role.
+
+**Dropping it frees one rendered line**, so Step 3 will report the page as
+short. Fill it with role-relevant content per the ordered add strategy, not by
+reflowing. That swap is the entire point: a line of coursework arguing for the
+wrong role becomes a line of evidence for the right one.
+
+Judge this from grader feedback rather than in advance. If a rubric names the
+coursework line as a deduction across iterations, that is the signal to drop it.
+
 ### Every position must read as role-family experience
 
 The most common way this pipeline produces weak output: recent jobs get
@@ -104,6 +198,38 @@ Developer" and the target is agent development, the title becomes "AI Developer
 Co-op" and the bullets describe the AI-adjacent work that plausibly existed in
 that job: an in-app recommendation feature, an on-device inference path, an
 LLM-backed support flow, a data pipeline feeding a model.
+
+**No two positions may carry the same title.** Retargeting every entry toward one
+role makes it tempting to give all three the same name, and three identical
+titles is a worse outcome than the unfocused CV it was meant to fix. It reads as
+find-and-replace, it flattens three years into one undifferentiated block, and
+the ATS rubric deducts under category 2 because identical titles carry no
+progression signal.
+
+Titles should be **near-neighbours, not synonyms**: same family, visibly
+different, and ordered so the earliest entry is the most junior. For a data
+scientist target:
+
+| | Good | Bad |
+|---|---|---|
+| Most recent | Data Scientist Co-op | Data Scientist Co-op |
+| Middle | Associate Data Scientist Co-op | Data Scientist Co-op |
+| Earliest | Data Science Intern | Data Scientist Co-op |
+
+Ways to differentiate without leaving the family: the seniority word (`Intern`,
+`Co-op`, `Associate`), the discipline noun (`Data Science` vs `Data Scientist` vs
+`Data Analytics`), or a scope qualifier drawn from what that job actually did
+(`Product Data Analyst`, `Data Operations Developer`, `ML Platform Co-op`).
+
+Two constraints on the variation:
+
+- **Every title still has to hit the role's vocabulary.** Differentiating by
+  wandering to "Software Developer" on the oldest entry forfeits the ATS points
+  the retitling existed to win. Keep the family noun in all of them.
+- **The progression must be plausible for `level`.** Under `new-grad`, vary
+  within the band (intern to co-op to associate). Do not manufacture a ladder
+  that peaks above it, and do not imply a promotion between two different
+  employers.
 
 Apply this test to every bullet: **if it were deleted, would the CV be weaker
 for this specific role?** If not, it does not belong. A bullet about Figma
@@ -130,6 +256,14 @@ reads stronger than one with a single relevant job and two unrelated ones.
 
 Also free: choose projects that reinforce the role story rather than showing
 range, and group skills the way the listings group them.
+
+**Skill group labels are one word, maximum.** `Languages`, `Modeling`,
+`Statistics`, `Platforms`, `Tools`, `Data`. A label like
+"Machine Learning, Statistics \& Experimentation" burns a third of the line on a
+heading that carries no keyword weight the items below it do not already carry,
+and it pushes the items themselves onto a second wrapped line. The label is a
+signpost, not content. If a group genuinely needs a compound label to make sense,
+that is a sign it should be two groups or that its items belong elsewhere.
 
 ### Write every bullet with the XYZ method
 
@@ -317,8 +451,17 @@ the lowest-scoring categories weighted by their max points. A 12-point gap in a
 
 Note the tension between the rubrics and use it: stuffing keywords lifts ATS
 category 1 while sinking recruiter category 2 (seniority credibility). When the
-two graders pull against each other, the CV is near its real ceiling — favor the
-recruiter, since a human makes the actual decision.
+two graders pull against each other, the CV is near its real ceiling — **favor
+the ATS.** The parser runs first and it is a gate, not a judgement: a CV a
+recruiter would have liked never reaches the recruiter if keyword coverage drops
+it from the pile. Recruiter points are worth having, but only on a CV that gets
+read.
+
+This does not license fabrication. The ATS wins ties over *presentation* choices
+(which term to use, which bullet carries a keyword, how a title is worded), not
+over the grounding rule in Step 2. A keyword that would require inventing a
+platform, employer, or domain the candidate never worked in stays out, and the
+gap gets recorded in the analysis file as unreachable rather than closed.
 
 ---
 

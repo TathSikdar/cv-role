@@ -639,6 +639,55 @@ def check_xyz(content: dict) -> tuple[list[str], list[str]]:
 
 
 # --------------------------------------------------------------------------
+# keyword coverage
+# --------------------------------------------------------------------------
+
+def report_keyword_coverage(slug: str) -> None:
+    """Warn on weak or regressed keyword coverage. Never fails the build.
+
+    Advisory by design. Coverage is a judgement about what the CV should spend
+    its space on, and a term can be legitimately absent because claiming it
+    would be a lie — that decision belongs to the generating agent and the
+    grader, not to the renderer. What the build CAN do cheaply is notice when a
+    high-frequency term silently got weaker between two iterations, which has
+    happened here before and cost four ATS points undetected for two rounds.
+    """
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import keyword_freq
+
+    try:
+        rows = keyword_freq.compute_coverage(slug)
+    except keyword_freq.KeywordError as exc:
+        # An old-format benchmark with no frequency table, or none at all. Not
+        # a build problem; the skill rebuilds it on the next run of this role.
+        print(f"[info] keyword coverage skipped: {exc}")
+        return
+
+    path = keyword_freq.coverage_path(slug)
+    previous = (
+        keyword_freq.parse_coverage(path.read_text(encoding="utf-8"))
+        if path.exists() else {}
+    )
+
+    for line in keyword_freq.coverage_regressions(previous, rows):
+        print(f"[warn] KEYWORD REGRESSION: {line}")
+
+    weak = [r for r in rows if r["tier"] == "CRITICAL" and r["status"] != "IN-BULLET"]
+    for r in weak:
+        detail = f" — {r['note']}" if r["note"] else ""
+        print(f"[warn] CRITICAL keyword {r['term']!r} ({r['count']} listings): "
+              f"{r['status']}{detail}")
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(keyword_freq.render_coverage(slug, rows), encoding="utf-8")
+
+    crit = [r for r in rows if r["tier"] == "CRITICAL"]
+    covered = len(crit) - len(weak)
+    print(f"[info] keyword coverage: {covered}/{len(crit)} CRITICAL terms in a "
+          f"bullet — detail in {path.relative_to(ROOT)}")
+
+
+# --------------------------------------------------------------------------
 # main
 # --------------------------------------------------------------------------
 
@@ -692,6 +741,8 @@ def main(argv: list[str]) -> int:
     except BuildError as exc:
         print(f"[FAIL] {exc}")
         return 1
+
+    report_keyword_coverage(slug)
 
     failures = verify_frozen(frozen, extracted, content)
     if failures:

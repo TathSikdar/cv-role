@@ -24,13 +24,27 @@ grades them through ATS + recruiter review loops.
   of the second. Measured from the PDF, not estimated.
 - **The page must be full**: exactly one page, no bottom-margin overrun, no more
   than three blank lines trailing.
+- **Bullets under one employer are written as a set**, not independently. Each
+  entry's bullets must add up to one describable job.
+
+## Keywords
+
+Each role's benchmark carries a generated `## Keyword frequency` table: how many
+listings demand each term, tiered CRITICAL / IMPORTANT / PERIPHERAL. Tier decides
+what earns bullet space, and CRITICAL terms belong in bullets rather than the
+skills list.
+
+Regenerate it with `python scripts/keyword_freq.py <slug>` — never hand-edit the
+table, and check both tiers before swapping one term for another.
 
 ## Layout
 
 ```
-config/     master_cv.md, cv-template.tex, cv-config.yaml, frozen.yaml, job-listings/
-scripts/    build_cv.py — assemble, render, extract, verify
-build/      per-role content.yaml and extracted PDF text
+config/     master_cv.md, cv-template.tex, cv-config.yaml, frozen.yaml,
+            keyword-synonyms.yaml, job-listings/
+scripts/    build_cv.py     — assemble, render, extract, verify
+            keyword_freq.py — listing frequency table + CV coverage report
+build/      per-role content.yaml, extracted PDF text, keyword-coverage.md
 ./          <slug>.tex, <slug>.pdf, <slug>_analysis.md
 ```
 

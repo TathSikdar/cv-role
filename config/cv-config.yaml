@@ -68,11 +68,11 @@ loop:
   max_iterations: 10
   ats_threshold: 90        # out of 100, per references/ats-rubric.md
 
-  # Set to 80, not 85, deliberately. The recruiter rubric deducts for uniform
-  # bullet length and a visible repeated skeleton, both of which the layout
-  # rules below (exactly two rendered lines per bullet, page filled) require.
-  # Roughly 5 points are therefore unreachable while those rules stand. Raise
-  # this only if you also relax `bullet_lines`.
+  # The recruiter rubric deducts for uniform bullet length and a visible
+  # repeated skeleton, both of which the layout rules below (exactly two
+  # rendered lines per bullet, page filled) require. A few points are therefore
+  # unreachable while those rules stand, and the bullet-set coherence category
+  # pulls in the same direction. Lower this before relaxing `bullet_lines`.
   recruiter_threshold: 90  # out of 100, per references/recruiter-rubric.md
 
   # Abort the role and report if a single iteration drops more than this many
@@ -87,9 +87,22 @@ loop:
 # a refresh on the next run.
 # ---------------------------------------------------------------------------
 listings:
-  per_role: 20             # target count when building a cache file
-  min_required: 10          # below this, warn — the benchmark is too thin
+  # The benchmark is a market sample, not a shortlist. Its job is to make term
+  # FREQUENCY measurable: a term demanded by 80 of 100 postings should outrank
+  # one demanded by 3, and at 20 listings that difference is noise. Every
+  # listing contributes its `Technologies required:` line to the frequency
+  # table; only the first `verbatim_subset` also keep quoted prose.
+  per_role: 100            # target count when building a cache file
+  min_required: 50         # below this, warn — frequencies get unstable
+  hard_floor: 30           # below this, stop and tell the user
+  verbatim_subset: 15      # listings that also keep full quoted requirements
   refresh: false           # true = re-fetch even if a cache file exists
+
+  # Bump to invalidate every cached benchmark built under an older format.
+  # v1 = 20 listings, no frequency table. v2 = frequency table + compact
+  # listings + verbatim subset. A role whose cache predates this rebuilds on
+  # its next run, and its scores stop being comparable with earlier iterations.
+  benchmark_version: 2
 
   # ELIGIBILITY FILTER — applied before a posting is written to the cache.
   #
@@ -135,6 +148,26 @@ listings:
       - head of
       - manager
       - Sr.
+
+# ---------------------------------------------------------------------------
+# KEYWORD TIERS
+# `scripts/keyword_freq.py` counts how many listings demand each term and sorts
+# them into three tiers by the cutoffs below. Tier is the priority signal for
+# both generation (which terms earn bullet space) and ATS scoring (which
+# absences cost points).
+#
+# The tiers exist to stop a term appearing in 3 postings from competing for
+# space with one appearing in 80. Before swapping a term out of a bullet, check
+# both terms' tiers — trading a CRITICAL term for an IMPORTANT one is a
+# measurable loss, and it has happened silently in this repo before.
+#
+# Synonyms are merged before counting, per config/keyword-synonyms.yaml.
+# ---------------------------------------------------------------------------
+keywords:
+  critical_pct: 0.50       # in >= 50% of listings — must appear in a bullet
+  important_pct: 0.25      # 25-49% — bullet or skills list
+                           # below important_pct = PERIPHERAL, spend space only
+                           # if it is genuinely free
 
 # ---------------------------------------------------------------------------
 # LAYOUT BUDGET

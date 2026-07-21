@@ -1,0 +1,140 @@
+# =============================================================================
+# KEYWORD NORMALIZATION
+#
+# Job postings spell the same requirement many ways. Counting the surface forms
+# separately splits one term's frequency across three rows and pushes a genuine
+# CRITICAL term down into PERIPHERAL, so the merge below happens BEFORE any
+# counting in scripts/keyword_freq.py.
+#
+# `canonical` maps the form to display -> every alias that means the same
+# thing. The key is what appears in the frequency table and what the CV should
+# say verbatim, so prefer the spelling the market uses most, not the tidiest
+# one ("CI/CD", not "continuous integration and delivery").
+#
+# Matching is case-insensitive and whole-token, longest alias first, with an
+# optional trailing "s". Adding an alias is cheap and safe; adding a WRONG
+# alias silently merges two distinct requirements, so keep them exact.
+# =============================================================================
+
+canonical:
+  # --- languages ---
+  "C++": [cpp, "c/c++", "c / c++", cplusplus, "c plus plus"]
+  "C#": ["c sharp", csharp, "c-sharp"]
+  "JavaScript": [js, "java script", ecmascript]
+  "TypeScript": [ts]
+  "Python": [python3, "python 3"]
+  "Go": [golang]
+  "Objective-C": ["objective c", objc]
+  "MATLAB": [matlab]
+
+  # --- data and ML ---
+  "machine learning": [ml, "machine-learning"]
+  "deep learning": [dl, "deep-learning"]
+  "natural language processing": [nlp]
+  "computer vision": []            # NOT aliased to "cv" — collides with the
+                                   # document itself in coverage matching
+  "large language models": [llm, llms, "large language model"]
+  "reinforcement learning": [rl]
+  "exploratory data analysis": [eda]
+  "A/B testing": ["ab testing", "a-b testing", "split testing", "ab tests"]
+  "ETL": [etl, "extract transform load", elt]
+  "scikit-learn": [sklearn, "scikit learn"]
+  "PyTorch": [torch, "py torch"]
+  "TensorFlow": [tf, "tensor flow"]
+  "pandas": [pd]
+  "data visualization": ["data viz", "data visualisation", dataviz]
+  "time series": ["time-series", "timeseries"]
+  "feature engineering": ["feature extraction"]
+
+  # --- platforms and infrastructure ---
+  "AWS": ["amazon web services"]
+  "GCP": ["google cloud", "google cloud platform"]
+  "Azure": ["microsoft azure"]
+  "CI/CD": [cicd, "ci / cd", "ci-cd", "continuous integration", "continuous delivery",
+            "continuous deployment", "continuous integration/continuous delivery"]
+  "Kubernetes": [k8s]
+  "Infrastructure as Code": [iac]
+  "REST": ["rest api", "restful", "restful api", "rest apis"]
+  "gRPC": [grpc]
+  "PostgreSQL": [postgres, psql]
+  "version control": ["source control", "revision control"]
+  # Git, GitHub, and GitLab stay distinct: GitHub Actions and GitLab CI are
+  # separate requirements from Git literacy, and merging them would credit the
+  # CV for a platform no posting asked about.
+  "Git": []
+
+  # --- embedded ---
+  "RTOS": ["real-time operating system", "real time operating system", freertos]
+  "firmware": ["firmware development"]
+  "bare-metal": ["bare metal"]
+  "CAN": ["can bus", "controller area network", "can-bus"]
+  "I2C": [i2c, "i²c"]
+  "SPI": [spi]
+  "UART": [uart, serial]
+  "JTAG": [jtag]
+  "device drivers": ["driver development", "device driver"]
+  "board bring-up": ["board bringup", "bring-up", bringup]
+  "oscilloscope": [scope, "logic analyzer"]
+  "DSP": ["digital signal processing"]
+  "embedded C": ["embedded c programming"]
+
+  # --- web ---
+  "React": ["react.js", reactjs]
+  "Node.js": [node, nodejs]
+  "Next.js": [nextjs]
+  "CSS": [css3]
+  "HTML": [html5]
+
+  # --- practice ---
+  "Agile": [scrum, "agile methodology", "agile development"]
+  "unit testing": ["unit tests", "test driven development", tdd]
+  "code review": ["code reviews", "peer review"]
+  "debugging": [troubleshooting]
+  "technical documentation": [documentation, "design documentation"]
+  "cross-functional collaboration": ["cross functional", "cross-functional teams"]
+
+# Terms that must never appear in the frequency table. Two kinds:
+#
+#   1. Education and credential vocabulary. Education is frozen in frozen.yaml,
+#      so a term the CV can never satisfy is not actionable and would only
+#      dilute the coverage denominator.
+#   2. Soft skills and filler. Every posting asks for "communication skills";
+#      a term present in 100% of listings that no CV can meaningfully evidence
+#      is a CRITICAL-tier row that can never be closed.
+#
+# Matched as whole tokens against a normalized term, same as aliases.
+stopterms:
+  - bachelor's
+  - bachelors
+  - bachelor's degree
+  - master's
+  - masters
+  - phd
+  - doctorate
+  - degree
+  - bs
+  - ms
+  - bsc
+  - msc
+  - gpa
+  - coursework
+  - communication skills
+  - communication
+  - teamwork
+  - team player
+  - collaboration
+  - problem solving
+  - problem-solving
+  - attention to detail
+  - self-starter
+  - fast-paced
+  - work ethic
+  - interpersonal skills
+  - written and verbal communication
+  - passion
+  - motivated
+  - detail oriented
+  - time management
+  - years of experience
+  - experience
+  - english

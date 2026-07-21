@@ -9,26 +9,35 @@ credibility*, not keyword presence — the ATS pass already happened.
 - `build/<slug>/<slug>.txt` — the CV as extracted from the rendered PDF.
 - `<slug>.pdf` — read this too if you can; you are a human reader and visual
   density, whitespace, and page count are legitimately part of your judgment.
-- `config/job-listings/<slug>.md` — the roles you are screening against.
+- `config/job-listings/<slug>.md` — the roles you are screening against. Read
+  the `## Verbatim listings` section: you need the postings' own language to
+  judge fit and seniority. The `## Keyword frequency` table is the ATS's
+  instrument, not yours — you are explicitly *not* scoring keyword presence, and
+  reading tiers will pull you toward counting terms instead of judging the
+  candidate.
 - `config/cv-config.yaml` — for `level`.
 
-**Do not read** `config/master_cv.md`, `build/<slug>/content.yaml`, or any
-`*_analysis.md`. You are simulating a first read by someone with no context. If
-you have seen those files, say so in your output.
+**Do not read** `config/master_cv.md`, `build/<slug>/content.yaml`,
+`build/<slug>/keyword-coverage.md`, or any `*_analysis.md`. You are simulating a
+first read by someone with no context. If you have seen those files, say so in
+your output.
 
 ## Scoring
 
+Six categories, 100 points. Score them in order — category 4 is a close reading
+that depends on having already formed the whole-page impressions in 1 through 3.
+
 ---
 
-### 1. Six-second scan — 25 pts
+### 1. Six-second scan — 20 pts
 
 Read only what the eye catches in one pass: name, most recent title, employers,
 the first line of each entry, section headers, page count.
 
 | Score | Anchor |
 |---|---|
-| 25 | Within six seconds it is obvious what this person does and that they do it for the target role. The strongest evidence is in the top third of the page |
-| 13 | Role identity emerges only after deliberate reading, or the strongest material is buried below the fold |
+| 20 | Within six seconds it is obvious what this person does and that they do it for the target role. The strongest evidence is in the top third of the page |
+| 10 | Role identity emerges only after deliberate reading, or the strongest material is buried below the fold |
 | 0 | After six seconds the role is still ambiguous, or the page is too dense to scan |
 
 Penalties: over one page for a candidate at `new-grad` or below (−5); wall-of-text
@@ -65,18 +74,19 @@ tension is the point of running both.
 
 ---
 
-### 3. Impact specificity — 20 pts
+### 3. Impact specificity — 15 pts
 
 Bullets should follow the XYZ construction: **accomplished X, as measured by Y,
-by doing Z.** Score against that structure.
+by doing Z.** Score each bullet *on its own* here; whether the bullets work
+together is category 4's job.
 
 | Score | Anchor |
 |---|---|
-| 20 | Nearly every bullet carries all three elements: a result, a concrete measure, and the technical mechanism. A reader can picture the actual work and could form an interview question from any bullet |
-| 10 | Outcomes stated but mechanism vague ("improved system efficiency using best practices"), or mechanism detailed with no outcome or no measure |
+| 15 | Nearly every bullet carries all three elements: a result, a concrete measure, and the technical mechanism. A reader can picture the actual work and could form an interview question from any bullet |
+| 8 | Outcomes stated but mechanism vague ("improved system efficiency using best practices"), or mechanism detailed with no outcome or no measure |
 | 0 | Responsibility lists — what they were assigned, not what they achieved |
 
-Deduct 3 pts per bullet (max 9) that could appear verbatim on any other
+Deduct 3 pts per bullet (max 7) that could appear verbatim on any other
 candidate's CV in this role family.
 
 Deduct 3 pts if the XYZ pattern is applied so rigidly that every bullet shares
@@ -86,21 +96,67 @@ deduction pull against each other on purpose.
 
 ---
 
-### 4. Role-narrative coherence — 20 pts
+### 4. Bullet-set coherence and tone — 15 pts
+
+Everything above judges the page as a whole or each bullet in isolation. This
+category is the close read in between, and it is the one that catches a CV
+assembled bullet by bullet: every line defensible alone, the four of them
+together describing no recognizable job.
+
+Work through the CV **one entry at a time** — each work-experience position, then
+each project. For each entry, read its bullets in order, as a set, and ask:
+
+- **Professional register.** Consistent tense and voice across the group. No
+  marketing voice ("cutting-edge", "seamlessly", "robust solutions"), no first
+  person, no filler. One bullet slipping into a different register is
+  conspicuous precisely because the others do not.
+- **Non-redundancy.** No two bullets in the entry make the same claim, lead with
+  the same technology, or report the same kind of metric. Two latency
+  percentages under one employer read as one accomplishment split in half to
+  fill space.
+- **Complementarity.** Together the bullets should cover different facets of one
+  job — build, then measure, then fix, then hand off. Four unrelated tasks that
+  happen to share an employer is the failure mode.
+- **The one-sentence test.** After reading the entry, state in one sentence what
+  this person did there. If you cannot — if the honest summary is a list joined
+  by "and also" — the bullets are fragments, however strong each one is.
 
 | Score | Anchor |
 |---|---|
-| 20 | Experience, projects, and skills tell one consistent story pointing at this role. Projects reinforce rather than distract. Skills are all plausibly evidenced by the body of the CV |
-| 10 | Broadly coherent with noticeable dilution — off-target projects, or a skills list padded well past what the CV evidences |
+| 15 | Every entry passes the one-sentence test. Register is uniform and professional throughout. No redundancy inside any entry, and each entry's bullets read as facets of one job |
+| 8 | One entry reads as disconnected fragments, or there is one clear redundancy or register break |
+| 0 | Bullets are independently written lines assembled under headings; no entry describes a coherent job |
+
+Deductions:
+- −3 per entry that fails the one-sentence test (max −9)
+- −2 per redundant bullet pair within an entry (max −4)
+- −2 per register break
+
+Judge entries against their own size: a two-bullet project is not expected to
+show the range a four-bullet position does. And do not confuse coherence with
+sameness — bullets that are coherent because they all say the same thing fail
+non-redundancy. What you are looking for is range within one story.
+
+---
+
+### 5. Role-narrative coherence — 15 pts
+
+Category 4 asked whether each entry hangs together. This one asks whether the
+entries hang together *with each other*, and with the projects and skills.
+
+| Score | Anchor |
+|---|---|
+| 15 | Experience, projects, and skills tell one consistent story pointing at this role. Projects reinforce rather than distract. Skills are all plausibly evidenced by the body of the CV |
+| 8 | Broadly coherent with noticeable dilution — off-target projects, or a skills list padded well past what the CV evidences |
 | 0 | Reads as a generalist CV lightly relabeled for this role |
 
-Deduct 4 pts if the skills section lists technologies that appear nowhere else in
+Deduct 3 pts if the skills section lists technologies that appear nowhere else in
 the CV *and* are central to the role — recruiters probe these first in a phone
 screen, and the candidate will not survive the probe.
 
 ---
 
-### 5. Red flags — 10 pts
+### 6. Red flags — 10 pts
 
 Start at 10 and deduct:
 
@@ -126,10 +182,11 @@ Return exactly this structure and nothing else:
 
 | Category | Score | Max |
 |---|---|---|
-| Six-second scan | | 25 |
+| Six-second scan | | 20 |
 | Seniority credibility | | 25 |
-| Impact specificity | | 20 |
-| Role-narrative coherence | | 20 |
+| Impact specificity | | 15 |
+| Bullet-set coherence | | 15 |
+| Role-narrative coherence | | 15 |
 | Red flags | | 10 |
 
 ### Credibility concerns
@@ -137,6 +194,17 @@ Return exactly this structure and nothing else:
 
 ### Generic or interchangeable bullets
 <quoted, with what would make each specific>
+
+### Bullet-set review
+<one block per work-experience entry and per project, in CV order. The summary
+line is the one-sentence test — write "FRAGMENTS: cannot summarize" if it fails.>
+
+**<Employer or Project> — <one-sentence summary of what this person did here>**
+
+| # | Bullet (first 40 chars) | Register | Redundancy | Fits the set |
+|---|---|---|---|---|
+| 1 | Reduced model training time by 40% by... | OK | OK | OK |
+| 2 | Cut inference latency 30% by rewriting... | OK | same metric type as 1 | weak |
 
 ### Deductions taken
 <category — points — reason, one per line>

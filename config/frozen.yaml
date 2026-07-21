@@ -1,0 +1,67 @@
+# =============================================================================
+# FROZEN FACTS — the immutable spine of every generated CV.
+#
+# Nothing in this file is ever rewritten by CV generation. The build script
+# injects these values directly into the LaTeX; the generator only ever supplies
+# position TITLES and BULLETS (see build/<role>/content.yaml).
+#
+# This is enforcement, not guidance: because the generator never emits company
+# names, dates, locations, or the education block at all, it cannot drift them.
+# scripts/verify_frozen.py then re-checks the *rendered PDF text* as a backstop.
+#
+# Edit this file when the underlying facts change. Never edit it to make a CV
+# score better.
+# =============================================================================
+
+contact:
+  name: "Tath Sikdar"
+  # Short line under the name (e.g. phone, city, or work authorization).
+  contact_line: "Mississauga, ON"
+  email_display: "rikisikdar1@gmail.com"
+  email_url: "rikisikdar1@gmail.com"
+  # TODO(user): replace the two placeholders below with your real profiles.
+  linkedin_display: "linkedin.com/in/tathagata-sikdar"
+  linkedin_url: "https://www.linkedin.com/in/tathagata-sikdar"
+  github_display: "github.com/tathsikdar"
+  github_url: "https://github.com/tathsikdar"
+
+# ---------------------------------------------------------------------------
+# EDUCATION — injected verbatim as LaTeX. Fully frozen, including the bullet.
+# ---------------------------------------------------------------------------
+education_latex: |
+  \resumeSubheading
+    {McMaster University}{Sep 2021 - Apr 2026}
+    {B.Eng in Mechatronics Engineering Co-op}{Hamilton, Ontario}
+    \resumeItemListStart
+      \resumeItem{Coursework: Embedded, Robotics, DSP, RTOS, DSA | Formula Electric (Software \& Controls)}
+    \resumeItemListEnd
+
+# ---------------------------------------------------------------------------
+# WORK EXPERIENCE — company / dates / location are frozen. The generator
+# supplies only `title` and `bullets` for each `id`, in this exact order.
+# Entries may not be added, removed, or reordered.
+# ---------------------------------------------------------------------------
+experience:
+  - id: nestle
+    company: "Nestlé Canada"
+    dates: "Apr 2024 - Dec 2025"
+    location: "Toronto, ON"
+  - id: chase
+    company: "Chase Auto Parts"
+    dates: "Sep 2023 - Apr 2024"
+    location: "Mississauga, ON"
+  - id: fanique
+    company: "Fanique Group"
+    dates: "May 2023 - Sep 2023"
+    location: "Toronto, ON"
+
+# ---------------------------------------------------------------------------
+# Date strings the verifier will tolerate anywhere in the rendered PDF.
+# Any date range found in the PDF that is not listed here is a hard failure —
+# this is what catches an invented or stretched duration.
+# ---------------------------------------------------------------------------
+allowed_date_ranges:
+  - "Sep 2021 - Apr 2026"
+  - "Apr 2024 - Dec 2025"
+  - "Sep 2023 - Apr 2024"
+  - "May 2023 - Sep 2023"

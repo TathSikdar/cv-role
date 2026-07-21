@@ -1,0 +1,13 @@
+# Tectonic build artifacts
+*.log
+*.aux
+*.out
+*.synctex.gz
+
+# Python
+__pycache__/
+*.pyc
+
+# Generated CVs are committed on purpose — they are the deliverable.
+# Extracted text is a derived intermediate.
+build/*/*.txt

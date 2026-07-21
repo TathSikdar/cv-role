@@ -1,0 +1,133 @@
+# =============================================================================
+# CV-ROLE RUN CONFIGURATION
+#
+# This is the file you edit between runs. Set the seniority target, pick which
+# roles to generate, and tune how hard the review loop pushes.
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# SENIORITY TARGET
+# Applies to every role in this run. Drives title wording, scope of claims,
+# years-of-experience expectations, and how the graders calibrate.
+# One of: intern | new-grad | junior | mid | senior | staff
+#
+# `new-grad` is a BAND, not a single title. It covers postings labelled new
+# grad, university grad, entry level, junior, associate, Level/Tier I, and I/II
+# combined ladders. Listings searches and grader calibration must treat all of
+# these as in-band; a posting titled "Junior AI Engineer" or "AI Engineer I" is
+# a valid new-grad target, not an overreach.
+# ---------------------------------------------------------------------------
+level: new-grad
+
+# ---------------------------------------------------------------------------
+# ROLES TO GENERATE
+# `slug` drives every output filename: <slug>.tex, <slug>.pdf,
+# <slug>_analysis.md, config/job-listings/<slug>.md
+# Comment out a role to skip it this run.
+# ---------------------------------------------------------------------------
+roles:
+  - slug: agent-developer
+    name: "Agent Developer"
+    search_terms: "AI agent developer LLM agent engineer LangGraph multi-agent"
+
+  - slug: ai-ml-engineer
+    name: "AI/ML Engineer"
+    search_terms: "AI ML engineer machine learning engineer PyTorch MLOps"
+
+  - slug: full-stack-developer
+    name: "Full Stack Developer"
+    search_terms: "full stack developer React Node TypeScript"
+
+  - slug: backend-developer
+    name: "Backend Developer"
+    search_terms: "backend engineer API microservices distributed systems"
+
+  - slug: frontend-developer
+    name: "Frontend Developer"
+    search_terms: "frontend engineer React TypeScript UI performance accessibility"
+
+  - slug: embedded-developer
+    name: "Embedded Developer"
+    search_terms: "embedded software engineer firmware C RTOS bare-metal CAN"
+
+  - slug: data-scientist
+    name: "Data Scientist"
+    search_terms: "data scientist statistics experimentation Python SQL modeling"
+
+  - slug: actuarial-developer
+    name: "Actuarial Developer"
+    search_terms: "actuarial developer actuarial modeling software insurance Prophet AXIS"
+
+# ---------------------------------------------------------------------------
+# REVIEW LOOP
+# The loop stops as soon as BOTH thresholds are met, or when max_iterations is
+# reached — whichever comes first. Every iteration is appended to the analysis
+# file, so a regression is always visible in the trajectory.
+# ---------------------------------------------------------------------------
+loop:
+  max_iterations: 3
+  ats_threshold: 90        # out of 100, per references/ats-rubric.md
+
+  # Set to 80, not 85, deliberately. The recruiter rubric deducts for uniform
+  # bullet length and a visible repeated skeleton, both of which the layout
+  # rules below (exactly two rendered lines per bullet, page filled) require.
+  # Roughly 5 points are therefore unreachable while those rules stand. Raise
+  # this only if you also relax `bullet_lines`.
+  recruiter_threshold: 80  # out of 100, per references/recruiter-rubric.md
+
+  # Abort the role and report if a single iteration drops more than this many
+  # points versus the previous iteration on either rubric. Prevents the loop
+  # from chasing a rubric off a cliff.
+  regression_abort_delta: 8
+
+# ---------------------------------------------------------------------------
+# JOB LISTINGS BENCHMARK
+# Listings are cached once per role and reused across every iteration, so score
+# movement reflects CV changes and nothing else. Delete a cached file to force
+# a refresh on the next run.
+# ---------------------------------------------------------------------------
+listings:
+  per_role: 6              # target count when building a cache file
+  min_required: 4          # below this, warn — the benchmark is too thin
+  refresh: false           # true = re-fetch even if a cache file exists
+
+# ---------------------------------------------------------------------------
+# LAYOUT BUDGET
+# The template targets a single page. The build script warns past these limits.
+# ---------------------------------------------------------------------------
+layout:
+  max_pages: 1
+
+  # The page must be FULL, not merely within budget. More than this many blank
+  # lines at the bottom of the final page fails the build and the fix is to ADD
+  # content, not to reformat. A thin-looking page reads as a thin candidate.
+  max_trailing_blank_lines: 3
+
+  # Bottom edge of the usable text area, in PDF points (bp) from the top of the
+  # page. Letter is 792bp tall. Derived from the template's own TeX geometry:
+  #   text_top    = 1in + \voffset + \topmargin + \headheight + \headsep
+  #               = 72.27 - 50.58878 = 21.68 TeX pt
+  #   text_bottom = 21.68 + \textheight (751.60756) = 773.29 TeX pt
+  #   in bp       = 773.29 / 72.27 * 72 = 770.4
+  # Recompute this if you change any margin in cv-template.tex — see
+  # references/latex.md for the \typeout probe that prints these values.
+  text_bottom_pt: 770.4
+
+  # Rendered lines each bullet must occupy, measured from the PDF. Three lines
+  # is a wall of text a recruiter skips; one line wastes the row. Exactly two.
+  bullet_lines: [2, 2]
+
+  # How full the bullet's final line should be, as a fraction of column width.
+  # The sweet spot is a bullet that runs close to the end of line two. Falling
+  # short warns rather than fails, since the fix is editorial.
+  bullet_target_fill: 0.65
+
+  # Right edge of the text column in PDF points. Leave null to measure it from
+  # the widest rendered line, which is reliable once any line reaches the margin.
+  text_right_pt: null
+
+  # Soft targets used when generating and when adding/cutting to fit.
+  bullets_per_experience: [3, 5]   # [min, max]
+  project_count: [2, 3]
+  bullets_per_project: [2, 4]
+  skill_groups: [3, 4]

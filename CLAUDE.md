@@ -17,6 +17,15 @@ grades them through ATS + recruiter review loops.
 
 ## CV content rules (enforced by the build)
 
+- **Experience bullets are designed from the keyword table, not retargeted from
+  the master CV.** Each entry hosts one invented project that solves a problem
+  the employer actually has; the bullets are that project's narrative. The
+  project is invented, the anchors are not: `config/frozen.yaml` fixes each
+  employer's real `domain`, the tenure, `level`, and the candidate's
+  `technology_exposure`. See SKILL.md Step 2, tests T1 to T6.
+- **Neither grader can detect fabrication.** Both are forbidden from reading the
+  master CV or `content.yaml`, so an invented project with a plausible metric
+  scores clean. Rising scores are not evidence the content is defensible.
 - **No em or en dashes** anywhere in CV content. No `—`, `–`, `--`, or `---`.
 - **Every bullet uses the XYZ method**: accomplished X, as measured by Y, by
   doing Z.

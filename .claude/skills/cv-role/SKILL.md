@@ -5,21 +5,42 @@ description: Generate a role-targeted CV from the master CV, render it to PDF wi
 
 # cv-role
 
-Reverse-engineers the ideal candidate for a role family. Takes the master CV,
-rewrites everything that is allowed to change, renders a real PDF, and pushes it
-through two independent graders until it clears threshold or runs out of
-iterations.
+Reverse-engineers the ideal candidate for a role family. Reads the market's own
+keyword frequencies, designs a project for each frozen employer that solves a
+problem that business actually has, writes the entry's bullets as that project's
+narrative, renders a real PDF, and pushes it through two independent graders until
+it clears threshold or runs out of iterations.
 
 ## Invocation
 
 - `/cv-role` — every role in `config/cv-config.yaml`
 - `/cv-role <slug>` — one role (`/cv-role backend-developer`)
+- `/cv-role <slug> <n>` — one role, capped at `n` iterations
+  (`/cv-role embedded-developer 5`)
+- `/cv-role <n>` — every role, each capped at `n` iterations
+
+**Parsing the argument.** A trailing positive integer is the iteration cap;
+everything before it names the role. Match the role loosely against the `slug`
+and `name` fields in `config/cv-config.yaml` — `embedded developer`,
+`Embedded Developer`, and `embedded-developer` all select the same role. If the
+role does not match exactly one entry, ask rather than guess.
+
+Reject a cap that is not a positive integer, and say what was wrong. `0` is not
+a cap: it would generate a CV and never grade it, which is the one thing this
+skill exists to prevent.
 
 ## Before starting
 
 Read `config/cv-config.yaml`. It supplies `level`, the role list, loop
 thresholds, and layout budgets. Everything below is driven by it — do not
 hardcode a threshold or an iteration count.
+
+**The one exception is the iteration cap.** An `n` passed at invocation
+overrides `loop.max_iterations` for that run only. Never write it back to
+`config/cv-config.yaml`: the argument is a property of one run, and persisting
+it would silently change every later run that passed no argument. Thresholds and
+`regression_abort_delta` are not overridable this way — a shorter run is still
+graded against the same bar.
 
 Process roles one at a time, start to finish. Do not interleave.
 
@@ -35,15 +56,24 @@ Non-negotiable, and enforced mechanically by `scripts/build_cv.py`:
 | Education coursework bullet | **Wording frozen, presence optional.** Never reworded. May be dropped whole — see below. |
 | Company names, dates, locations | **Frozen.** Injected from `config/frozen.yaml`. You never write them. |
 | Number and order of jobs | **Frozen.** No adding, dropping, or reordering. |
-| Position titles | Free — retarget to the role's vocabulary. |
-| Experience bullets | Free — rewrite completely for the role. |
+| Position titles | Free — retarget to the role's vocabulary, provided the entry's bullets make the title true. |
+| Experience bullets | Free — **designed from the keyword table, not retargeted from the master CV.** See Step 2. |
 | Projects | Free rein. Reuse from the master CV, adapt, or invent something that would impress for this role. |
-| Skills | Free rein, including technologies not on the master CV. |
+| Skills | Free rein, but every role-central skill must be evidenced by a bullet. |
 
-Bullets must remain grounded in work that plausibly happened at that company in
-that timeframe at that level. Reframing an agent-orchestration project as a
-backend-systems project is the intent. Inventing a job that never happened is
-not, and the recruiter rubric penalizes it hard under seniority credibility.
+**The project inside a job is invented. The job is not.** Step 2 designs a project
+that solves a problem the employer actually has, and writes the entry's bullets as
+that project's narrative. What constrains the invention is `config/frozen.yaml`:
+the employer's real `domain`, the tenure implied by the frozen dates, `level`, and
+the candidate's `technology_exposure` set. Those five are never invented.
+
+The failure this replaces is a bullet about work from a different domain with the
+role's keywords bolted on. The failure it risks is a project the candidate cannot
+speak to in a phone screen. T1 through T6 in Step 2 exist to prevent the second,
+and they are the only thing preventing it — **neither grader can detect
+fabrication.** Both are forbidden from reading `master_cv.md` or `content.yaml`,
+so a confidently written invented project with a plausible metric scores clean on
+both rubrics. Rising scores are not evidence that the content is defensible.
 
 ---
 
@@ -200,31 +230,214 @@ a score change would tell you nothing about the CV.
 
 ---
 
-## Step 2 — Generate content
+## Step 2 — Generate content from the keyword set
 
-Read `config/master_cv.md` and the listings. Write `build/<slug>/content.yaml`
-per the schema in `references/latex.md`.
+**The master CV is not the source of experience bullets.** It supplies exactly two
+things, and both have already been distilled into `config/frozen.yaml`: each
+employer's real business `domain`, and the candidate's `technology_exposure` set.
+Never read `config/master_cv.md` when writing experience bullets. Projects may
+still be adapted from it.
 
-**Treat the master CV as raw material, not as a draft to lightly edit.** The
-single most common failure of this pipeline is copying master bullets across with
-a few keywords swapped in. That produces a CV that reads as generic to the
-recruiter grader and wastes iterations. The build enforces this: any bullet ≥75%
-textually identical to a master bullet is flagged.
+Experience bullets are *designed outward from the keyword table*. Retargeting
+master bullets is what this step used to do and it is what produced weak entries:
+a bullet about agent orchestration with `CAN` bolted onto it reads as a generalist
+CV relabeled for the role, and both rubrics say so.
 
-Work bullet by bullet:
+The order is: keywords, then allocation, then a real problem at that employer,
+then the project that solves it, then the bullets.
 
-1. From the listings, extract what this role is actually screened on — the
-   responsibilities that recur, not just the technology nouns.
-2. For each job, ask what that same work looks like *through this role's lens*.
-   The Nestlé multi-agent system is an orchestration problem to an agent
-   developer, a distributed-systems and API problem to a backend developer, a
-   pipeline and evaluation problem to an ML engineer. Same underlying work, a
-   different layer of it made the subject of the sentence.
-3. Rewrite the bullet around that layer, with the mechanism a practitioner in
-   this role would care about. Change the verb, the object, and the detail — not
-   just the technology names.
-4. Drop material that does not serve the role, and surface master-CV work that
-   was buried. Bullet counts need not match the master.
+### 2.1 Read the keyword set
+
+From `config/job-listings/<slug>.md`, take the `## Keyword frequency` table.
+Work with **CRITICAL and IMPORTANT rows only**, and keep their counts —
+allocation is weighted by them. PERIPHERAL never drives a design decision.
+
+### 2.2 Allocate keywords to entries
+
+- **CRITICAL terms are shared.** Every one appears in a substantive bullet in the
+  most recent entry, and in at least one other. Repeating a CRITICAL term costs
+  nothing on the ATS rubric and reads as continuity to a recruiter. This is the
+  only tier allowed to appear everywhere.
+- **Each IMPORTANT term is assigned to exactly one entry**, chosen by which
+  employer's real `domain` most plausibly generates it — not by which entry has
+  room. A term with no plausible home goes to projects; failing that, to skills;
+  failing that, it is recorded as unreachable in the analysis file. Never force
+  one into an entry whose business would not produce it.
+- **Caps.** At most `ceil(n_important / n_entries) + 1` primary IMPORTANT terms
+  per entry, and **at most 3 tracked terms per bullet**. Past three the sentence
+  becomes a technology list, which the recruiter rubric hits twice: once for
+  buzzword density, once for a bullet that could appear on any candidate's CV.
+
+Worked example, embedded-developer:
+
+| Entry | Real domain | CRITICAL | IMPORTANT |
+|---|---|---|---|
+| Nestlé, 20 mo | food/CPG manufacturing: filling lines, plant-floor sensors, QA sampling | C, C++ | firmware, RTOS, CAN, embedded systems |
+| Chase, 8 mo | auto parts retail: counter terminals, diagnostic readers | C, C++ | SPI, I2C, UART, Python |
+| Fanique, 4 mo | Toronto consumer/media, real work mobile | C (light) | Git, Linux |
+
+### 2.3 Find the problem, in the employer's own terms
+
+For each entry, write **one sentence naming a problem that business actually has,
+containing no term from the keyword table.** This is a working note, not CV text.
+
+> Nestlé: "The plant's filling line has to be stopped and hand-checked at every
+> SKU changeover, because nothing on the line reports fill weight continuously."
+
+The no-keyword rule is the whole test. If the sentence needs "CAN bus" to make
+sense, the problem was reverse-engineered from the keyword list and the entry will
+read as invented no matter how well it is written.
+
+### 2.4 Design the project that solves it
+
+One project per entry. Two only for entries with 4+ bullets, and then they must be
+phases of one effort, not two efforts. The project must:
+
+- solve the 2.3 problem,
+- be implementable with the allocated keywords,
+- be sized to the entry's tenure and to `level`,
+- be a different *shape* from every other entry's project.
+
+### 2.5 Write the entry's bullets as one project narrative
+
+Bullet count from `layout.bullets_per_experience`. Each bullet is a different
+facet of the one project, drawn from a fixed set so they cannot collapse into each
+other: **build → verify → harden → hand off.** A 2-bullet entry takes build plus
+one other; a 3-bullet entry takes build, verify, harden.
+
+Ordering, which is what "start with the keywords necessary for that section"
+means concretely:
+
+- **Bullet 1 is the anchor bullet.** It carries every CRITICAL term allocated to
+  the entry plus that entry's highest-count IMPORTANT term, and its vocabulary
+  must justify the entry's **title**. If the title says "Firmware Developer
+  Co-op", bullet 1 is the bullet that makes that title true.
+- **At least one allocated term lands in the first ~100 characters**, so it sits
+  on rendered line one where a six-second scan reaches, not trailing off line two.
+- Remaining bullets are ordered by descending listing-count of the terms they
+  carry.
+- No two bullets in an entry open with the same technology.
+
+An anchor bullet built this way:
+
+> `Cut SKU changeover validation on a filling line from \textbf{40} minutes of manual checks to under \textbf{9} by writing the \textbf{C} sampling and fault-reporting \textbf{firmware} for an inline load-cell node that streams weights to the line controller over \textbf{CAN}.`
+
+Three tracked terms, inside a sentence whose subject is a problem Nestlé actually
+has. Compare a retargeted master bullet, which is an orchestration sentence with
+technology nouns swapped in.
+
+### 2.6 The anchoring constraints
+
+The project is invented. These are not:
+
+| Invented (free) | Fixed (never invented) |
+|---|---|
+| The project, its problem, mechanism, and metrics | Employer name, dates, location, order |
+| The position title | The employer's real `domain` |
+| | The **duration**, and therefore the project's size |
+| | `level`, and the scope of ownership language |
+| | The candidate's `technology_exposure` set |
+
+Apply all six tests to your own output before writing YAML. Rewrite what fails;
+do not annotate it.
+
+- **T1 Domain.** The 2.3 sentence names the employer's actual business and
+  contains no keyword-table term.
+- **T2 Exposure.** Every technology named in an experience bullet appears in
+  `frozen.yaml: technology_exposure`. No adjacency arguments. A CRITICAL term
+  outside the set stays out and is recorded as unreachable. `scripts/build_cv.py`
+  warns on violations, but the check belongs here, before the build.
+- **T3 Tenure and scope.** One deliverable per ~4 months of tenure. Permitted
+  openers: wrote, built, implemented, ported, instrumented, tested, traced,
+  brought up, characterized, reduced, cut, held, verified. **Forbidden anywhere in
+  experience bullets:** architected, owned, led, established, drove, spearheaded,
+  standardized across. Ownership verbs outrunning the role cost 4 recruiter points
+  and have done so in this repo.
+- **T4 Instrument.** Every metric names or plainly implies the instrument that
+  produced it, and it is one a person at `level` could read: a logic-analyzer
+  capture, a changeover log, a bench timing run, a bug count. **No dollar figures
+  in any experience bullet.** When the project itself is invented, an unattributed
+  dollar amount is the loudest possible fabrication tell.
+- **T5 Interview defence.** For each entry, write three questions a hiring manager
+  would ask about the project, and confirm the bullets contain enough to answer
+  them without inventing facts outside `technology_exposure`. If an answer needs a
+  fact the candidate could not supply, the project is over-specified: cut detail
+  until it is defensible.
+- **T6 Non-collision.** No invented employer project shares subject matter with a
+  Personal Projects entry, and no two employers host the same project shape. Three
+  CAN sensor nodes at three companies is a worse CV than the unfocused one it
+  replaced.
+
+### 2.7 The win-magnitude ladder
+
+This method optimizes for keyword-dense impressive projects, and the recruiter
+rubric deducts 4 points for "every bullet claiming a large win". Uniform heroism
+is how an invented CV gives itself away. So:
+
+1. **Exactly one bullet per entry** carries a headline outcome — a percentage, a
+   time reduction, a throughput figure. It is the anchor bullet, so this rule
+   reinforces the keyword ordering rather than fighting it.
+2. Every other bullet is a supporting facet with **no improvement claim**:
+   *verify* (a measurement with a named instrument), *harden* (a qualitative
+   outcome), *hand off* (enablement).
+3. Across the whole CV, **at most 3 experience bullets** carry a headline metric,
+   and no two are the same kind.
+4. **The earliest entry gets no headline at all.** A four-month intern who
+   delivered a measured business win is the least believable line on a page.
+
+Build constraint to write against: `check_xyz` hard-fails a bullet with no digit
+anywhere unless it matches one of `without`, `to eliminate/prevent/avoid/confirm`,
+`before release`, `so that`. So a non-headline bullet either carries an incidental
+honest figure — channel count, board count, register count — or uses one of those
+constructions.
+
+### 2.8 Delegate the generation
+
+Run the design above as a **subagent with a restricted context**. The graders are
+isolated so they cannot see your intent; this agent is isolated for the opposite
+reason — so it cannot see the master CV's *prose*, which is the failure mode the
+whole step exists to escape. It gets the master CV's *facts* through
+`frozen.yaml`.
+
+```
+Agent(subagent_type="general-purpose", description="Generate <slug> content", prompt="""
+Design CV content for <role name> at level <level>. Return YAML only.
+
+You may read: config/frozen.yaml, config/job-listings/<slug>.md,
+config/cv-config.yaml, .claude/skills/cv-role/references/latex.md
+
+Do NOT read: config/master_cv.md, any existing build/<slug>/content.yaml,
+<slug>_analysis.md, build/<slug>/keyword-coverage.md, or either rubric in
+.claude/skills/cv-role/references/. Writing directly at a rubric produces
+rubric-shaped prose, which is exactly what the graders penalize as
+machine-generated.
+
+<paste sub-steps 2.2 through 2.7 verbatim, plus the CRITICAL/IMPORTANT rows with
+counts, the frozen entries with domain and tenure, technology_exposure, the
+layout budgets, and the LaTeX and dash rules from references/latex.md>
+
+Return one YAML document:
+  allocation:   term -> entry id
+  entries:      [{id, title, project: {name, problem, mechanism, metric_source},
+                  keywords_used, bullets}]
+  projects:     [{name, tech, bullets}]
+  skills:       [{label, items}]
+  self_check:   {<entry id>: {T1..T6}, unreachable_terms, headline_metric_count}
+""")
+```
+
+Route the result: `title`, `bullets`, `projects`, `skills` go into
+`build/<slug>/content.yaml`; the `project`, `allocation` and `self_check` blocks
+go into `build/<slug>/generation-notes.md`, which is **never shown to a grader**.
+
+**Re-run T2, T4 and the headline count yourself against the returned bullets.** An
+agent grading its own output passes.
+
+**The generation agent runs once per role**, here at the top of Step 2. Step 6
+revisions edit `content.yaml` directly, or re-invoke the agent scoped to a single
+entry id when the recruiter's bullet-set review flags that entry. Regenerating the
+whole CV every iteration makes the analysis trajectory meaningless and the loop
+never converges.
 
 ### The education coursework bullet may be dropped
 
@@ -265,12 +478,17 @@ The most common way this pipeline produces weak output: recent jobs get
 retargeted properly while an older, unrelated position is left nearly untouched,
 so the CV carries a block of bullets that do nothing for the role.
 
-**Retitle and rewrite every position, including ones whose real work sits
-outside the role family.** Titles are free. If the master CV says "Mobile
-Developer" and the target is agent development, the title becomes "AI Developer
-Co-op" and the bullets describe the AI-adjacent work that plausibly existed in
-that job: an in-app recommendation feature, an on-device inference path, an
-LLM-backed support flow, a data pipeline feeding a model.
+**Retitle and rewrite every position, including ones whose real business sits
+outside the role family.** Under Step 2 each entry hosts an invented project, so
+the title follows the project rather than the employer's industry. A consumer
+mobile shop targeted at agent development becomes "AI Developer Co-op" hosting an
+LLM-backed support flow, because a consumer app company plausibly has that
+problem.
+
+**But the title must be earned by bullet 1.** A title claiming work the entry's
+anchor bullet does not describe is the single most expensive error this pipeline
+makes: it scored recruiter 40 in this repo, against 72 for the same CV with honest
+titles. Retitle because the project justifies it, never to reach a keyword.
 
 **No two positions may carry the same title.** Retargeting every entry toward one
 role makes it tempting to give all three the same name, and three identical
@@ -309,10 +527,11 @@ for this specific role?** If not, it does not belong. A bullet about Figma
 handoff or design-token consistency is dead weight on an agent developer CV no
 matter how well written it is.
 
-The constraint that still holds: bullets must describe work that could plausibly
-have happened at that company, in that timeframe, at that level. You choose
-which layer of a real job to make the subject. You do not relocate a project
-from one employer to another, and you do not invent a job that never happened.
+The constraint that still holds: the entry's invented project must solve a problem
+inside that employer's real `domain`, be sized to that tenure and `level`, and be
+built only from technologies in `technology_exposure`. You invent the project. You
+do not invent the employer, the dates, the business it is in, or a technology the
+candidate has never touched. See T1 through T6 in Step 2.
 
 ### Cover the role's skill surface across the bullets
 
@@ -399,8 +618,18 @@ For every entry, before moving on:
 - **Check for duplicate claims.** Two latency percentages under one employer read
   as one accomplishment split in half to fill space. So do two bullets opening
   with the same technology.
-- **Keep one voice.** Consistent tense across the group, no marketing register
-  ("cutting-edge", "seamlessly", "robust"), no first person.
+- **Keep one voice across the group.** Consistent tense, no first person.
+- **And keep every bullet professional on its own.** Consistency is not enough:
+  four uniformly casual bullets read as casual, not as coherent, and there is no
+  register break to notice. Judge each bullet against plain professional English
+  rather than against its neighbours. No shop-floor diction:
+  "dumped it", "off the floor", "guessed at", "figured out", "spun up",
+  "hooked up", "a ton of", "under the hood", "on the fly".
+  And no marketing register in the other direction: "cutting-edge",
+  "seamlessly", "robust solutions". Every "it",
+  "this" and "them" must have exactly one possible antecedent inside its own
+  bullet. Read each bullet once at speed, as a screener does: if a noun run
+  parses wrong on that pass, rewrite it. The build fails on the named phrases.
 
 Coherence is not sameness. Bullets that cohere because they all say the same
 thing fail the redundancy check instead. What you want is range inside one story.
@@ -420,8 +649,15 @@ that runs close to the end of the second line, so aim to fill it past
 
 Roughly 200 to 230 characters lands on two full lines in this template, but bold
 markup changes the width, so let the build tell you. Filling line two more fully
-costs no vertical space, so a short second line should always be extended with
-real detail rather than left padded with whitespace.
+costs no vertical space, so extend a short second line with a further *fact*:
+another number, component, constraint, or consumer of the work.
+
+Never extend it with a gloss that restates the outcome in casual words. "So that
+a silent unit could be read back rather than guessed at" is padding wearing a
+purpose clause, and it is where unprofessional wording comes from. If no further
+fact exists, tighten the opening clause and let the bullet be shorter: the fill
+target **warns, it does not fail**. A short bullet costs a warning; a padded one
+costs register points under the recruiter rubric.
 
 Calibrate scope language to `level` — see the seniority anchors in
 `references/ats-rubric.md`. Overclaiming is penalized as hard as underclaiming.
@@ -528,8 +764,8 @@ Score keyword coverage against the benchmark's `## Keyword frequency` table.
 Use its counts and tiers as given; do not recount across the listings.
 
 Do NOT read config/master_cv.md, build/<slug>/content.yaml, <slug>.tex,
-build/<slug>/keyword-coverage.md, or any *_analysis.md file. You are simulating
-an automated parser with no prior context.
+build/<slug>/keyword-coverage.md, build/<slug>/generation-notes.md, or any
+*_analysis.md file. You are simulating an automated parser with no prior context.
 
 Return only the rubric's output block.
 """)
@@ -538,6 +774,11 @@ Return only the rubric's output block.
 and the same shape for the recruiter, pointing at `recruiter-rubric.md` and
 additionally allowing `<slug>.pdf` (a human recruiter sees the rendered page).
 Carry the same "do NOT read" list.
+
+`build/<slug>/generation-notes.md` is on that list for the strongest reason of
+all: it contains the invented problem statement and mechanism behind every
+experience entry. A grader that reads it is reading the scaffolding instead of the
+page, and would score our intent rather than what a real screener sees.
 
 `build/<slug>/keyword-coverage.md` is on that list for a reason. The build script
 writes it by matching the frequency table against the rendered CV — it is our own
@@ -560,6 +801,7 @@ things worse is only visible in the history.
 <!-- benchmark: <n> listings, version <n> -->
 
 ## Iteration <n> — <date>
+<!-- cap this run: <n> (requested at invocation | loop.max_iterations) -->
 
 | Rubric | Score | Threshold | Status |
 |---|---|---|---|
@@ -583,6 +825,11 @@ things worse is only visible in the history.
 <what you changed, and what it did to each category — the audit trail>
 ```
 
+Record the cap on each iteration section. A run that stops three iterations
+short of clearing reads as a plateau a year later unless the file says the cap
+was 3, and the whole point of appending rather than overwriting is that the
+trajectory stays interpretable.
+
 **If the benchmark was rebuilt this run, say so before the first iteration
 section** and state plainly that earlier scores are not comparable:
 
@@ -599,8 +846,9 @@ across that boundary is meaningless.
 
 ## Step 6 — Iterate or stop
 
-**Stop when:** both scores meet their thresholds, or `loop.max_iterations` is
-reached — whichever comes first.
+**Stop when:** both scores meet their thresholds, or the iteration cap is
+reached — whichever comes first. The cap is the `n` passed at invocation if
+there was one, otherwise `loop.max_iterations`.
 
 **Abort when:** either score drops by more than `loop.regression_abort_delta`
 versus the previous iteration. Report the regression, keep the better-scoring
@@ -630,11 +878,16 @@ recruiter would have liked never reaches the recruiter if keyword coverage drops
 it from the pile. Recruiter points are worth having, but only on a CV that gets
 read.
 
-This does not license fabrication. The ATS wins ties over *presentation* choices
-(which term to use, which bullet carries a keyword, how a title is worded), not
-over the grounding rule in Step 2. A keyword that would require inventing a
-platform, employer, or domain the candidate never worked in stays out, and the
-gap gets recorded in the analysis file as unreachable rather than closed.
+This does not license unbounded fabrication. The ATS wins ties over *presentation*
+choices (which term to use, which bullet carries a keyword, how a title is
+worded), not over the anchoring constraints in Step 2. A keyword that would
+require claiming a technology outside `technology_exposure`, or a project outside
+the employer's real `domain`, stays out and gets recorded in the analysis file as
+unreachable rather than closed.
+
+Watch for this specifically when both scores are climbing. The graders cannot see
+ground truth, so a CV drifting past its anchors shows up as *improvement* on both
+rubrics right up until a phone screen. Rising scores never retire T1 through T6.
 
 ---
 
@@ -642,7 +895,21 @@ gap gets recorded in the analysis file as unreachable rather than closed.
 
 Per role: final scores, iteration count, stop reason, output paths.
 Across roles when running the full set: a summary table, plus any role that hit
-`max_iterations` without clearing — those need a human look.
+the iteration cap without clearing — those need a human look.
+
+State the stop reason precisely, because the two cap cases carry different
+meaning. A role that exhausted `loop.max_iterations` has plateaued and wants a
+human. A role that stopped at a cap passed at invocation was cut short on
+purpose and may simply need more iterations, so say so and name the number
+that would continue it:
+
+> Stopped at the requested cap of 5 iterations, not at a plateau. ATS 91,
+> recruiter 88 (threshold 90) and still climbing. `/cv-role embedded-developer 10`
+> to keep going.
+
+Rerunning does not resume: each run starts from the current `content.yaml`,
+which is the last iteration's output, so a second `/cv-role <slug> 5` continues
+from where the first stopped and appends to the same analysis file.
 
 ---
 
@@ -656,5 +923,6 @@ Across roles when running the full set: a summary table, plus any role that hit
 | `build/<slug>/content.yaml` | generated content (the editable source) |
 | `build/<slug>/<slug>.txt` | extracted text the ATS grader scores |
 | `build/<slug>/keyword-coverage.md` | which terms landed and which slipped — **never shown to a grader** |
+| `build/<slug>/generation-notes.md` | each entry's invented problem, mechanism, metric source, keyword allocation, and T1-T6 self-check — **never shown to a grader** |
 | `config/job-listings/<slug>.md` | cached benchmark: frequency table, compact listings, verbatim subset |
 | `config/keyword-synonyms.yaml` | alias merges and stopterms, shared across roles |

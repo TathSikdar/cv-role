@@ -106,10 +106,34 @@ together describing no recognizable job.
 Work through the CV **one entry at a time** — each work-experience position, then
 each project. For each entry, read its bullets in order, as a set, and ask:
 
-- **Professional register.** Consistent tense and voice across the group. No
-  marketing voice ("cutting-edge", "seamlessly", "robust solutions"), no first
-  person, no filler. One bullet slipping into a different register is
-  conspicuous precisely because the others do not.
+- **Professional register.** Judged two ways, and the second is the one that
+  gets missed. *Relationally:* consistent tense and voice across the group. One
+  bullet slipping into a different register is conspicuous precisely because the
+  others do not. *Absolutely:* each bullet must also survive on its own, against
+  plain professional English rather than against its neighbours. A CV whose
+  bullets are uniformly informal has no break to spot and must still fail here.
+  The absolute defects, each disqualifying alone:
+  - **Colloquial diction.** "dumped it", "pulled it off the floor", "guessed
+    at", "figured out", "spun up", "hooked up", "a ton of", "under the hood",
+    "on the fly". Shop-floor speech pasted into a CV. This is the mirror image
+    of marketing voice and costs the same.
+  - **Marketing voice** ("cutting-edge", "seamlessly", "robust solutions"),
+    first person, filler.
+  - **Unanchored pronoun.** Every "it", "this", "them" must have exactly one
+    possible antecedent inside its own bullet. "a reader that dumped it" —
+    dumped what?
+  - **Resumptive pronoun.** "the table store staff read from it" is
+    ungrammatical: the relative clause already carries the object, so the "it"
+    is a second copy of it. Read the clause without the pronoun; if it is now
+    correct, the pronoun was an error.
+  - **Garden path.** Read each bullet once, at speed, as a screener does. If a
+    noun run parses wrong on that pass ("the fault-code table store staff read
+    from" reads as "table store", a shop), it fails, however correct it is on
+    the second reading.
+  - **Padding gloss.** A trailing clause that restates the outcome in casual
+    words to fill the line rather than adding a fact: "so that a silent unit
+    could be read back rather than guessed at". The layout rules require a full
+    second line; they do not license buying it with a gloss.
 - **Non-redundancy.** No two bullets in the entry make the same claim, lead with
   the same technology, or report the same kind of metric. Two latency
   percentages under one employer read as one accomplishment split in half to
@@ -123,14 +147,27 @@ each project. For each entry, read its bullets in order, as a set, and ask:
 
 | Score | Anchor |
 |---|---|
-| 15 | Every entry passes the one-sentence test. Register is uniform and professional throughout. No redundancy inside any entry, and each entry's bullets read as facets of one job |
+| 15 | Every entry passes the one-sentence test. Register is professional in every bullet judged on its own, and uniform across each entry. No redundancy inside any entry, and each entry's bullets read as facets of one job |
 | 8 | One entry reads as disconnected fragments, or there is one clear redundancy or register break |
 | 0 | Bullets are independently written lines assembled under headings; no entry describes a coherent job |
 
 Deductions:
 - −3 per entry that fails the one-sentence test (max −9)
 - −2 per redundant bullet pair within an entry (max −4)
-- −2 per register break
+- −2 per register break (relational: one bullet out of step with its group),
+  max −4
+- −2 per bullet carrying colloquial diction, marketing voice, first person, or a
+  padding gloss, counted once per bullet however many it holds
+- −2 per bullet carrying an unanchored or resumptive pronoun
+- −1 per bullet that has to be read twice to parse
+- **The three absolute deductions above total at most −6 for the category.**
+
+The cap is deliberate. Uncapped, a CV with two badly worded bullets loses enough
+here to trip `loop.regression_abort_delta` in one pass, which abandons the role
+instead of repairing it. Absolute register defects are scored here and **not
+again** under red flags: a resumptive pronoun is a grammar error and a
+colloquialism is a tone error, but counting either in both categories would let
+one clause cost four points.
 
 Judge entries against their own size: a two-bullet project is not expected to
 show the range a four-bullet position does. And do not confuse coherence with
@@ -201,10 +238,16 @@ line is the one-sentence test — write "FRAGMENTS: cannot summarize" if it fail
 
 **<Employer or Project> — <one-sentence summary of what this person did here>**
 
+The `Register` cell is `OK`, or it names the defect and quotes the span:
+`colloquial: "off the floor"`, `pronoun: "dumped it"`, `garden path: "table
+store staff"`, `padding gloss: "rather than guessed at"`. Judge every bullet
+against plain professional English here, not against the bullets beside it.
+
 | # | Bullet (first 40 chars) | Register | Redundancy | Fits the set |
 |---|---|---|---|---|
 | 1 | Reduced model training time by 40% by... | OK | OK | OK |
-| 2 | Cut inference latency 30% by rewriting... | OK | same metric type as 1 | weak |
+| 2 | Ported the diagnostic console onto the 4... | colloquial: "off the floor" | OK | OK |
+| 3 | Cut inference latency 30% by rewriting... | OK | same metric type as 1 | weak |
 
 ### Deductions taken
 <category — points — reason, one per line>

@@ -170,6 +170,7 @@ def build_projects(content: dict) -> tuple[str, list[str]]:
     for i, p in enumerate(projects):
         name = (p.get("name") or "").strip()
         tech = (p.get("tech") or "").strip()
+        url = (p.get("url") or "").strip()
         bullets = p.get("bullets") or []
         if not name:
             raise BuildError(f"projects[{i}] has no name")
@@ -178,10 +179,23 @@ def build_projects(content: dict) -> tuple[str, list[str]]:
 
         problems += check_latex_hazards(f"projects[{i}].name", name)
         problems += check_latex_hazards(f"projects[{i}].tech", tech)
+        problems += check_latex_hazards(f"projects[{i}].url", url)
         for j, b in enumerate(bullets):
             problems += check_latex_hazards(f"projects[{i}].bullets[{j}]", b)
 
-        heading = f"\\textbf{{{name}}}" + (f" $|$ \\emph{{{tech}}}" if tech else "")
+        # The repo link is a bare GitHub icon leading the heading. Visible URL
+        # text does not fit: the name plus tech list already runs to within a
+        # few points of \textwidth. No \raisebox here, unlike the contact line
+        # in the template: the glyph already sits on the baseline, and lowering
+        # it drops it visibly below the heading text.
+        link = f"\\href{{{url}}}{{\\faGithub}}\\ " if url else ""
+
+        # The tech list is set one step down from the project name. At the
+        # heading's default size it ran the row past \textwidth on its own,
+        # leaving nothing for the link.
+        heading = f"{link}\\textbf{{{name}}}" + (
+            f" $|$ {{\\small\\emph{{{tech}}}}}" if tech else ""
+        )
         blocks.append(
             f"    \\resumeProjectHeading\n      {{{heading}}}{{}}\n"
             + bullets_latex(bullets)
@@ -488,7 +502,8 @@ def measure_bullets(pdf_path: Path, config: dict) -> tuple[list[str], list[str],
             if fill < target_fill:
                 warnings.append(
                     f"bullet's last line is only {fill:.0%} full "
-                    f"(target {target_fill:.0%}): \"{snippet}\" — add detail"
+                    f"(target {target_fill:.0%}): \"{snippet}\" "
+                    "— add a further fact, or tighten the opening clause"
                 )
 
     avg = f"{statistics.mean(fills):.0%}" if fills else "n/a"
@@ -496,11 +511,22 @@ def measure_bullets(pdf_path: Path, config: dict) -> tuple[list[str], list[str],
     return failures, warnings, report
 
 
-def check_divergence(content: dict, master_path: Path) -> list[str]:
-    """Warn where a generated bullet is nearly a copy of a master CV bullet.
+def _strip_latex(s: str) -> str:
+    s = re.sub(r"\\[a-zA-Z]+\{([^{}]*)\}", r"\1", s)
+    s = re.sub(r"[\\${}]", "", s)
+    return " ".join(s.lower().split())
 
-    A role-targeted CV that reuses the master's phrasing has not actually been
-    retargeted, and both graders will score it as generic.
+
+def check_divergence(content: dict, master_path: Path) -> list[str]:
+    """Warn where a generated PROJECT bullet is nearly a copy of a master bullet.
+
+    Scoped to projects deliberately. Under the project-first method in SKILL.md
+    Step 2, experience bullets are designed from the keyword table and never
+    derived from the master CV, so a similarity check over them can no longer
+    fire — and a check that always passes is worse than none, because it reads
+    as coverage. Projects still legitimately adapt master material, so that is
+    where the check earns its keep. The experience-side guard is
+    check_exposure() below.
     """
     if not master_path.exists():
         return []
@@ -512,26 +538,102 @@ def check_divergence(content: dict, master_path: Path) -> list[str]:
     if not master_bullets:
         return []
 
-    def strip_latex(s: str) -> str:
-        s = re.sub(r"\\[a-zA-Z]+\{([^{}]*)\}", r"\1", s)
-        s = re.sub(r"[\\${}]", "", s)
-        return " ".join(s.lower().split())
-
-    master_norm = [strip_latex(b) for b in master_bullets]
+    master_norm = [_strip_latex(b) for b in master_bullets]
     warnings: list[str] = []
-    for job in content.get("experience", []):
-        for i, bullet in enumerate(job.get("bullets", [])):
-            probe = strip_latex(bullet)
+    for proj in content.get("projects", []):
+        for i, bullet in enumerate(proj.get("bullets", [])):
+            probe = _strip_latex(bullet)
             best = max(
                 (SequenceMatcher(None, probe, m).ratio() for m in master_norm),
                 default=0.0,
             )
             if best >= 0.75:
                 warnings.append(
-                    f"experience[{job['id']}].bullets[{i}] is {best:.0%} identical "
-                    "to a master CV bullet — retarget it for this role"
+                    f"projects[{proj.get('name', i)}].bullets[{i}] is {best:.0%} "
+                    "identical to a master CV bullet — adapt it for this role"
                 )
     return warnings
+
+
+def check_exposure(content: dict, frozen: dict) -> list[str]:
+    """Warn where an experience bullet names a technology the candidate lacks.
+
+    This is test T2 from SKILL.md Step 2. Because Step 2 invents the project
+    inside each job, the technology it is built from is the main thing keeping
+    the entry defensible in a phone screen. Neither grader can detect a claim
+    the candidate cannot support, so this check is the only automated guard.
+
+    Advisory by design: `technology_exposure` is a hand-maintained list and a
+    legitimate new skill shows up here first as a false positive. The fix is to
+    add it to frozen.yaml when it is genuinely true, never to silence the check.
+    """
+    exposure = frozen.get("technology_exposure") or []
+    if not exposure:
+        return []
+
+    # Longest first so "Embedded C" is consumed before the bare "C" pattern.
+    terms = sorted({str(t) for t in exposure}, key=len, reverse=True)
+    patterns = [
+        (t, re.compile(
+            r"(?<![A-Za-z0-9+#])" + re.escape(t.lower()) + r"s?(?![A-Za-z0-9+#])"
+        ))
+        for t in terms
+    ]
+
+    warnings: list[str] = []
+    for job in content.get("experience", []):
+        for i, bullet in enumerate(job.get("bullets", [])):
+            # The bolded spans are where generated bullets put technology names,
+            # so check those rather than trying to tag every noun in prose.
+            bolded = re.findall(r"\\textbf\{([^{}]*)\}", bullet)
+            for span in bolded:
+                token = _strip_latex(span).strip(" .,;:()")
+                if not token:
+                    continue
+                if any(p.search(token) for _, p in patterns):
+                    continue  # a known technology, possibly inside a phrase
+                # Bolding is also used for headline figures ("40\%", "3 days",
+                # "14 to 2"). Require a run of 3+ letters before treating a span
+                # as a technology name; short connectives inside a metric do not
+                # qualify. Single- and double-letter technologies (C, C++, I2C)
+                # are already in the exposure set and matched above.
+                if not re.search(r"[A-Za-z]{3}", token):
+                    continue
+                warnings.append(
+                    f"experience[{job['id']}].bullets[{i}] claims '{token}', "
+                    "which is not in frozen.yaml technology_exposure (T2) — "
+                    "add it there if genuinely true, otherwise rewrite"
+                )
+    return warnings
+
+
+# --------------------------------------------------------------------------
+# Per-bullet content checks
+# --------------------------------------------------------------------------
+
+
+def iter_bullets(content: dict) -> list[tuple[str, str]]:
+    """Every generated bullet as (location, plain text), in CV order.
+
+    Markup is stripped here rather than in each caller: \\textbf{...} must not
+    hide a figure from the XYZ check nor split a banned phrase across a brace
+    boundary for the register check ("\\textbf{Linux}-side reader that dumped
+    it").
+    """
+    out: list[tuple[str, str]] = []
+    for job in content.get("experience", []):
+        for i, b in enumerate(job.get("bullets", [])):
+            out.append((f"experience[{job.get('id')}].bullets[{i}]", b))
+    for j, proj in enumerate(content.get("projects", [])):
+        for i, b in enumerate(proj.get("bullets", [])):
+            out.append((f"projects[{j}].bullets[{i}]", b))
+
+    plain = []
+    for where, bullet in out:
+        text = re.sub(r"\\[a-zA-Z]+\{([^{}]*)\}", r"\1", bullet)
+        text = re.sub(r"[\\${}^]", "", text).strip()
+        plain.append((where, text))
+    return plain
 
 
 # --------------------------------------------------------------------------
@@ -592,21 +694,7 @@ def check_xyz(content: dict) -> tuple[list[str], list[str]]:
     failures: list[str] = []
     warnings: list[str] = []
 
-    def bullets() -> list[tuple[str, str]]:
-        out = []
-        for job in content.get("experience", []):
-            for i, b in enumerate(job.get("bullets", [])):
-                out.append((f"experience[{job.get('id')}].bullets[{i}]", b))
-        for j, proj in enumerate(content.get("projects", [])):
-            for i, b in enumerate(proj.get("bullets", [])):
-                out.append((f"projects[{j}].bullets[{i}]", b))
-        return out
-
-    for where, bullet in bullets():
-        # Strip \textbf{...} and stray LaTeX so markup neither hides a figure
-        # nor supplies a false one.
-        plain = re.sub(r"\\[a-zA-Z]+\{([^{}]*)\}", r"\1", bullet)
-        plain = re.sub(r"[\\${}^]", "", plain).strip()
+    for where, plain in iter_bullets(content):
         excerpt = plain[:60] + ("..." if len(plain) > 60 else "")
 
         if not re.search(r"\d", plain):
@@ -633,6 +721,107 @@ def check_xyz(content: dict) -> tuple[list[str], list[str]]:
             warnings.append(
                 f"{where}: does not open with a past-tense achievement verb "
                 f"(X): \"{excerpt}\""
+            )
+
+    return failures, warnings
+
+
+# --------------------------------------------------------------------------
+# Professional register
+# --------------------------------------------------------------------------
+
+# Phrases banned outright. This list is duplicated as the exemplars in the
+# "Professional register" sub-test of references/recruiter-rubric.md category 4
+# and in the register rule in SKILL.md; adding a phrase in one place means
+# adding it in all three, and drift between them is the failure mode.
+#
+# Hard failure is honest here for the same reason the em/en dash ban in
+# check_latex_hazards is: these are literal strings with no legitimate CV use,
+# so there is no judgement to get wrong. Anything requiring judgement belongs
+# in the warnings below, or in the rubric.
+BANNED_PHRASES = (
+    # Shop-floor diction. The deflation failure, and the one that shipped: a
+    # CV whose bullets are uniformly casual has no register break to spot.
+    "dumped it", "off the floor", "guessed at", "figured out", "spun up",
+    "hooked up", "a ton of", "under the hood", "on the fly",
+    # Marketing voice. The inflation failure, and the mirror of the above.
+    "cutting-edge", "seamlessly", "robust solutions",
+)
+
+BANNED = re.compile("|".join(re.escape(p) for p in BANNED_PHRASES), re.I)
+
+# \bI\b does not match inside "I2C" — there is no word boundary between two
+# word characters — so the technology name survives this.
+FIRST_PERSON = re.compile(r"\b(I|we|our|my)\b", re.I)
+
+# A pronoun closing the bullet, whose antecedent is usually several clauses
+# back: "paired with a Linux-side reader that dumped it".
+TRAILING_PRONOUN = re.compile(r"\b(it|them|this)\b\s*[.,]")
+
+# Resumptive pronoun: the relative clause already carries the object, so the
+# pronoun is a second copy of it. "the fault-code table store staff read from
+# it" should end "read from". Dropping the pronoun and re-reading is the test.
+RESUMPTIVE = re.compile(
+    r"\b(that|which|staff|team)\b[^,]{0,40}"
+    r"\b(from|to|with|on|at|for)\s+(it|them)\b",
+    re.I,
+)
+
+
+def check_register(content: dict) -> tuple[list[str], list[str]]:
+    """Check every bullet reads as professional English on its own.
+
+    Returns (failures, warnings).
+
+    The recruiter rubric's register test was for a long time relational only —
+    it looked for one bullet slipping out of step with its group. A CV whose
+    bullets are uniformly informal has no break to spot, so shop-floor diction
+    scored clean through ten iterations. This checks each bullet against plain
+    professional English instead of against its neighbours.
+
+    Banned phrases are hard failures because presence of a literal string is
+    unambiguous. The pronoun heuristics are warnings because they are not: "the
+    buffer that held it" is perfectly clear when the antecedent is one noun
+    away, and per check_xyz's trade, a false failure blocks a build on a
+    correct bullet while a false pass costs a grader comment.
+
+    Garden-path constructions ("the fault-code table store staff read from")
+    are deliberately not checked. No regex separates a misparsing noun run from
+    a legitimate compound, and a check that cannot fire honestly reads as
+    coverage without being it. That one is the recruiter's job.
+    """
+    failures: list[str] = []
+    warnings: list[str] = []
+
+    for where, plain in iter_bullets(content):
+        excerpt = plain[:60] + ("..." if len(plain) > 60 else "")
+
+        for hit in sorted({m.group(0).lower() for m in BANNED.finditer(plain)}):
+            failures.append(
+                f"{where}: banned phrase \"{hit}\": \"{excerpt}\"\n"
+                "      rewrite in plain professional English, naming what was "
+                "acted on"
+            )
+        if FIRST_PERSON.search(plain):
+            failures.append(
+                f"{where}: first person: \"{excerpt}\"\n"
+                "      CV bullets are written without a subject pronoun"
+            )
+
+        # Only the closing third: a pronoun early in the bullet usually still
+        # has its antecedent in view.
+        tail = plain[int(len(plain) * 2 / 3):]
+        if TRAILING_PRONOUN.search(tail):
+            warnings.append(
+                f"{where}: bullet ends on a pronoun: \"{excerpt}\"\n"
+                "      fine if its antecedent is the nearest noun; otherwise "
+                "name the thing"
+            )
+        if RESUMPTIVE.search(plain):
+            warnings.append(
+                f"{where}: possible resumptive pronoun: \"{excerpt}\"\n"
+                "      read the relative clause without the pronoun; if it is "
+                "now correct, drop it"
             )
 
     return failures, warnings
@@ -724,6 +913,17 @@ def main(argv: list[str]) -> int:
         print("\nEvery bullet: accomplished X, as measured by Y, by doing Z.")
         return 1
 
+    reg_failures, reg_warnings = check_register(content)
+    for w in reg_warnings:
+        print(f"[warn] {w}")
+    if reg_failures:
+        print("[FAIL] professional register:")
+        for f in reg_failures:
+            print(f"  - {f}")
+        print("\nEvery bullet must read as professional English on its own, "
+              "not merely\nmatch the register of the bullets around it.")
+        return 1
+
     tex_path = ROOT / f"{slug}.tex"
     pdf_path = ROOT / f"{slug}.pdf"
     out_dir = BUILD / slug
@@ -754,6 +954,9 @@ def main(argv: list[str]) -> int:
     print("[ok]   frozen facts verified against rendered PDF text")
 
     for w in check_divergence(content, CONFIG / "master_cv.md"):
+        print(f"[warn] {w}")
+
+    for w in check_exposure(content, frozen):
         print(f"[warn] {w}")
 
     sys.path.insert(0, str(Path(__file__).resolve().parent))

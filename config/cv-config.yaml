@@ -65,6 +65,8 @@ roles:
 # file, so a regression is always visible in the trajectory.
 # ---------------------------------------------------------------------------
 loop:
+  # Default cap. A trailing integer at invocation overrides it for that run
+  # only and is never written back here: `/cv-role embedded-developer 5`.
   max_iterations: 10
   ats_threshold: 90        # out of 100, per references/ats-rubric.md
 
@@ -73,6 +75,11 @@ loop:
   # rendered lines per bullet, page filled) require. A few points are therefore
   # unreachable while those rules stand, and the bullet-set coherence category
   # pulls in the same direction. Lower this before relaxing `bullet_lines`.
+  #
+  # `bullet_target_fill` also pushes toward padding clauses, which the register
+  # sub-test now deducts for. That one is NOT a genuine conflict: short fill
+  # warns rather than fails, so a bullet with nothing further to say should be
+  # shorter, not glossed out to the margin.
   recruiter_threshold: 90  # out of 100, per references/recruiter-rubric.md
 
   # Abort the role and report if a single iteration drops more than this many

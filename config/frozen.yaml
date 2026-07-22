@@ -50,19 +50,174 @@ education_bullet: 'Coursework: Embedded, Robotics, DSP, RTOS, DSA | Formula Elec
 # supplies only `title` and `bullets` for each `id`, in this exact order.
 # Entries may not be added, removed, or reordered.
 # ---------------------------------------------------------------------------
+#
+# `domain` is the employer's REAL business. Under the project-first generation
+# method (SKILL.md Step 2) the generator invents a project for each entry, and
+# `domain` is the anchor that keeps the invention plausible: the project must
+# solve a problem this business actually has. It is never rendered into the CV
+# and never scored — it constrains generation only. Edit it when the underlying
+# fact is wrong, never to widen what a role is allowed to claim.
 experience:
   - id: nestle
     company: "Nestlé Canada"
     dates: "Apr 2024 - Dec 2025"
     location: "Toronto, ON"
+    domain: >-
+      Food and beverage manufacturing and CPG. Filling, packaging and labelling
+      lines; plant-floor sensors and line controllers; QA sampling and weight
+      checks; SKU changeovers; warehouse and distribution; retail sales and
+      category data; corporate IT and internal tooling.
   - id: chase
     company: "Chase Auto Parts"
     dates: "Sep 2023 - Apr 2024"
     location: "Mississauga, ON"
+    domain: >-
+      Automotive parts retail and distribution. Counter and point-of-sale
+      terminals; barcode scanners and label printers; handheld vehicle
+      diagnostic readers and OBD tooling; parts catalogues and fitment lookup;
+      inventory and multi-store sync; back-office reporting.
   - id: fanique
     company: "Fanique Group"
     dates: "May 2023 - Sep 2023"
     location: "Toronto, ON"
+    domain: >-
+      Consumer and media products in Toronto. Cross-platform mobile and web
+      applications; consumer-facing companion apps; connected accessories and
+      peripherals paired to a phone; content delivery; design and brand work.
+
+# ---------------------------------------------------------------------------
+# TECHNOLOGY EXPOSURE — the closed set of technologies this candidate may be
+# described as having used, anywhere in generated experience bullets.
+#
+# Derived once from config/master_cv.md, the degree, and Formula Electric. This
+# is the second anchor for project-first generation: the project is invented,
+# but the technology it is built from is not. A term outside this list stays out
+# of the CV even when the listings demand it, and gets recorded as unreachable
+# in the analysis file rather than claimed.
+#
+# `scripts/build_cv.py` warns when an experience bullet names a technology that
+# is not on this list. Extend it only when the candidate genuinely picks
+# something up, never to make a keyword reachable.
+# ---------------------------------------------------------------------------
+technology_exposure:
+  # languages
+  - C
+  - C++
+  - Embedded C
+  - Python
+  - Go
+  - Dart
+  - TypeScript
+  - JavaScript
+  - SQL
+  - C#
+  - MATLAB
+  - Java
+  - assembly
+  # embedded and real-time
+  - FreeRTOS
+  - RTOS
+  - CAN
+  - SPI
+  - I2C
+  - UART
+  - GPIO
+  - ADC
+  - PWM
+  - device drivers
+  - interrupts
+  - ISR
+  - bare-metal
+  - bootloaders
+  - firmware
+  - embedded systems
+  - DSP
+  - state machines
+  # hardware and bring-up
+  - STM32
+  - ARM Cortex-M
+  - microcontrollers
+  - logic analyzers
+  - oscilloscopes
+  - board bring-up
+  - schematics
+  - sensors
+  - load cells
+  # platforms and tooling
+  - Linux
+  - embedded Linux
+  - Git
+  - CI/CD
+  - GitHub Actions
+  - Docker
+  - CMake
+  - YAML
+  - shell scripting
+  - pytest
+  - MQTT
+  - TCP/IP
+  - Modbus
+  - BLE
+  - REST
+  # application and ML
+  - PyTorch
+  - TensorFlow
+  - OpenCV
+  - CNNs
+  - YOLOv5
+  - Node.js
+  - React
+  - Electron
+  - Flutter
+  - Azure
+  - AWS
+  - LangGraph
+  - LangChain
+  - RAG
+  # data science and statistics — grounded in the master CV's Conformal-Cashflow
+  # and RouteWise projects (quantile regression, conformal prediction, hurdle
+  # models, SHAP, Optuna, LightGBM) plus the degree's DSP and statistics content
+  - pandas
+  - NumPy
+  - scikit-learn
+  - LightGBM
+  - Random Forest
+  - Optuna
+  - SHAP
+  - statistical modeling
+  - statistics
+  - regression
+  - quantile regression
+  - conformal prediction
+  - classification
+  - clustering
+  - forecasting
+  - time series
+  - A/B testing
+  - experimentation
+  - hypothesis testing
+  - feature engineering
+  - cohort
+  - survival analysis
+  - data visualization
+  - ETL
+  - dashboards
+  - machine learning
+  - exploratory data analysis
+  - gradient boosting
+  - k-means
+  - TF-IDF
+  - SARIMA
+  - data pipelines
+  - data cleaning
+  - data wrangling
+  - data quality
+  - model drift monitoring
+  - PostgreSQL
+  - Tableau
+  - Power BI
+  - Excel
+  - Windows
 
 # ---------------------------------------------------------------------------
 # Date strings the verifier will tolerate anywhere in the rendered PDF.

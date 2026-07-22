@@ -13,6 +13,7 @@ __pycache__/
 build/*/*.txt
 
 config/job-listings/
-.tex
-.pdf
-.log
+*.tex
+*.pdf
+*.log
+build/

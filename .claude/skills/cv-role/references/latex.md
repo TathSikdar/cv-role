@@ -157,7 +157,13 @@ After rendering, the script extracts the PDF text and checks:
    allowlist — this is what catches an invented or stretched duration
 4. No unfilled `{{PLACEHOLDER}}` remains
 5. Page fit — page count, margin overrun, and trailing blank space (hard failure)
-6. Bullet divergence from the master CV (warning)
+6. Project-bullet divergence from the master CV (warning). Scoped to projects:
+   experience bullets are designed from the keyword table under SKILL.md Step 2
+   and never derive from the master CV, so the check cannot fire on them.
+7. Technology exposure, test T2 (warning). Every bolded term in an experience
+   bullet must appear in `frozen.yaml: technology_exposure`. This is the only
+   automated guard on whether an invented project is one the candidate could
+   defend in a phone screen.
 
 If verification fails, fix `content.yaml`. **Never edit `config/frozen.yaml` to
 make a check pass** — that file is the ground truth the whole system rests on.

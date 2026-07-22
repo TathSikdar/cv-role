@@ -335,13 +335,26 @@ def term_pattern(term: str) -> re.Pattern:
 def split_regions(cv_text: str) -> tuple[str, str]:
     """Split the extracted CV into (substantive body, skills list).
 
-    A term that appears only under Technical Skills is a claim with no evidence
+    A term that appears only under the skills heading is a claim with no evidence
     behind it. Both the ATS rubric and every recruiter discount those, so the
     two regions have to be scored separately.
+
+    The heading is matched loosely because it lives in config/cv-template.tex and
+    has been renamed before ("Technical Skills" -> "Skills"). When the anchor
+    missed, this returned the whole document as body and every skills-list term
+    silently reported IN-BULLET, which is the one failure mode this function
+    exists to catch. Failing loudly beats reporting a false pass, so an
+    unmatched heading now raises rather than degrading.
     """
-    m = re.search(r"^\s*Technical Skills\s*$", cv_text, re.MULTILINE)
+    m = re.search(r"^\s*(?:Technical\s+)?Skills\s*$", cv_text, re.MULTILINE)
     if not m:
-        return cv_text, ""
+        raise KeywordError(
+            "no skills heading found in the extracted CV text (looked for a line "
+            "reading 'Skills' or 'Technical Skills'). Without it, skills-list "
+            "terms cannot be told apart from bullet evidence and coverage would "
+            "silently over-report. Check the \\section{} name in "
+            "config/cv-template.tex."
+        )
     return cv_text[:m.start()], cv_text[m.end():]
 
 

@@ -26,13 +26,15 @@ experience:
       - 'Isolated a \textbf{30\%} Day-7 retention gap between web and mobile cohorts by instrumenting a typed cross-platform event schema, then running \textbf{cohort} and \textbf{survival analysis} in \textbf{Python} to scope the product fix the team shipped.'
 
 projects:
-  - name: "Conformal-Cashflow: Liquidity Forecasting"
+  - name: "Conformal Cashflow - Liquidity Forecasting"
     tech: "Python, PyTorch, Conformal Prediction, SQL, Docker"
+    url: "https://github.com/TathSikdar/conformal-cashflow"
     bullets:
       - 'Achieved \textbf{90\% conformal coverage (PICP)} on liquidity forecasts by building a two-stage hurdle model, a classification gate feeding a quantile head, to put calibrated intervals around every prediction rather than a point estimate.'
       - 'Scaled training to \textbf{1.1M} transaction records by engineering per-account normalization, cyclical time encodings, and \textbf{FFT} spectral features in \textbf{NumPy} and \textbf{SciPy}, holding sharpness across heterogeneous accounts.'
-  - name: "RouteWise: Fuel Economy Prediction"
+  - name: "RouteWise - Fuel Economy Prediction"
     tech: "Python, LightGBM, Random Forest, Optuna, SHAP, SQLite"
+    url: "https://github.com/TathSikdar/route-wise"
     bullets:
       - 'Improved fuel-economy $R^2$ from \textbf{0.42} to \textbf{0.84} by cascading two \textbf{regression} models to separate congestion effects from vehicle physics, using Vehicle Specific Power as the bridging feature across 260+ vehicles.'
       - 'Tuned the \textbf{LightGBM} and \textbf{Random Forest} ensemble with \textbf{Optuna} Bayesian search, then read \textbf{SHAP} attributions to confirm the model leaned on road grade and speed variance rather than dataset collection artifacts.'

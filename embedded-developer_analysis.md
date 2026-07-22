@@ -374,6 +374,140 @@ board", and evidenced ADC and interrupts in the sensor-node bullet.
 Keyword coverage is saturated and cannot improve: 2/2 CRITICAL and 10/10 IMPORTANT
 terms, every one of them in a substantive bullet, 0 skills-only.
 
+<!-- RECRUITER RUBRIC REBALANCED 2026-07-22, between iterations 10 and 11.
+     Category 4's register sub-test was relational only: it looked for one
+     bullet out of step with its group, so a CV whose bullets were uniformly
+     informal had no break to detect. Added an absolute half (colloquial
+     diction, unanchored/resumptive pronouns, garden path, padding gloss) with
+     deductions capped at -6. Recruiter scores from iteration 11 on are NOT
+     comparable with 1-10: they are scored against different 100 points. -->
+
+## Iteration 11 — 2026-07-22
+<!-- cap this run: 2 (requested at invocation) -->
+
+| Rubric | Score | Threshold | Status |
+|---|---|---|---|
+| ATS | 99/100 | 90 | **MET** |
+| Recruiter | 85/100 | 90 | BELOW |
+
+ATS: keyword **30/30**, title 20/20, parseability 20/20, quantified 14/15,
+structure 15/15.
+Recruiter: scan 20/20, seniority 23/25, impact 11/15, coherence 12/15, narrative
+13/15, flags 6/10. **Screen decision: ADVANCE.**
+
+### Changes made since iteration 10
+
+`scripts/build_cv.py` gained `check_register`, which hard-failed the build on
+three banned phrases. Rewrote the two offending bullets:
+
+- Chase 3: "wrote the fault-code table store staff read from it, which named a
+  failing unit in place instead of pulling it off the floor" — a resumptive
+  pronoun, a garden path ("table store"), and shop-floor diction, in one clause.
+- Fanique 1: "a Linux-side reader that dumped it, so that a silent unit could be
+  read back rather than guessed at" — two banned phrases plus a padding gloss.
+
+### Binding constraints
+
+Red flags 6/10 and impact specificity 11/15 carry the most recoverable weight.
+The recruiter's drop from 91 is **not a regression**: the rubric changed under
+it. The new absolute register test fired on two defects that survived all ten
+previous iterations undetected — a padding gloss on Nestlé 3 ("which kept stale
+readings out of the QA record rather than recording them as measured values")
+and a dangling participle on Fanique 2, where "merging" attached to "the next
+intern" rather than to the candidate. Both are exactly what the rebalance was
+built to catch, which is the first evidence it works on content it was not
+written against.
+
+## Iteration 12 — 2026-07-22 (FINAL)
+<!-- cap this run: 2 (requested at invocation) -->
+
+| Rubric | Score | Threshold | Status |
+|---|---|---|---|
+| ATS | 96/100 | 90 | **MET** |
+| Recruiter | 90/100 | 90 | **MET** |
+
+ATS: keyword **30/30**, title 19/20, parseability 19/20, quantified 14/15,
+structure 14/15.
+Recruiter: scan 18/20, seniority 23/25, impact 13/15, coherence 14/15, narrative
+14/15, flags 8/10. **Screen decision: ADVANCE.**
+
+### Changes made since iteration 11
+
+- Nestlé 1: "the C and C++ task layer" to "a C and C++ task layer", breaking the
+  sole-ownership construction repeated across two employers (seniority, −2).
+- Nestlé 3: deleted the padding gloss, replaced with a fact (3 sensor dropouts
+  surfaced in the first month).
+- Chase 3: dropped the "so X could be" construction, which Fanique 1 was also
+  using back to back.
+- Fanique 2: "merging" to "and merged", fixing the dangling participle, and
+  extended the bullet off its 45% fill warning.
+- Sensor node 1: replaced "bringing the board up to its first CAN frame", which
+  the recruiter named as the stock STM32 bullet, with the actual difficulty (a
+  prescaler mismatch 4% off the bus rate).
+- Skills: "bootloaders" was evidenced nowhere in the CV and the recruiter said it
+  would be probed first. Swapped for "device drivers", which the Chase and
+  sensor-node bullets already evidence.
+
+**Stop reason: both thresholds met, on the final iteration of a requested cap of
+2.** The cap and the clear coincided, so this is not a plateau — see below.
+
+### ATS 99 to 96 is grader variance, not a regression
+
+The iteration-12 ATS grader deducted for a missing phone number, a `Skills`
+header that is not `Technical Skills`, and dateless project headings. **None of
+those changed between iterations 11 and 12**, and the iteration-11 grader scored
+the same properties 20/20 and 15/15. Keyword coverage, the only category this
+run could move, held at 30/30 both times. Treat the 3-point spread as the
+grader's own noise floor on categories that reward structural conventions, not
+as evidence the CV got worse.
+
+## Iteration 13 — 2026-07-22 (grading run only, no cap)
+
+| Rubric | Score | Threshold | Status |
+|---|---|---|---|
+| ATS | 98/100 | 90 | **MET** |
+| Recruiter | 90/100 | 90 | **MET** |
+
+ATS: keyword **30/30**, title 20/20, parseability 20/20, quantified 14/15,
+structure 14/15.
+Recruiter: scan 19/20, seniority 22/25, impact 13/15, coherence 14/15, narrative
+**15/15**, flags 7/10. **Screen decision: ADVANCE.**
+
+### Changes made since iteration 12
+
+Removed the StrideSense capstone project: it carried a single bullet against
+`layout.bullets_per_project: [2, 4]`. Backfilled the freed lines with a third
+sensor-node bullet (watchdog and retry path against CAN dropout), chosen as a
+harden facet so the project's three bullets read build, schedule, harden.
+
+### Removing StrideSense closed the exact deduction it caused
+
+Role-narrative coherence went 14/15 to **15/15**, the first perfect score that
+category has recorded. Iteration 12's recruiter had taken −1 for "StrideSense's
+PyTorch/CNN/OpenCV header pulls toward ML for a firmware screen", so a removal
+made on a layout-target violation turned out to close a narrative deduction as
+well. Keyword coverage was unaffected: `embedded systems` and `C++` were the
+project's only tracked terms and both are carried by Nestlé and Chase bullets.
+
+### Binding constraints
+
+Red flags 7/10 and seniority credibility 22/25 now hold the recoverable weight,
+and neither is reachable without a decision the pipeline cannot make on its own:
+
+- **−1 red flags, location formatting.** "Hamilton, Ontario" against "Toronto,
+  ON" and "Mississauga, ON". This is the second consecutive iteration to lose a
+  point here. The string lives in `config/frozen.yaml`, so normalizing it is a
+  ground-truth edit, not a content edit.
+- **−3 seniority credibility.** The 20-month "Co-op" tenure reads long against a
+  standard 4, 8 or 16 month term, and the 35% changeover figure is a plant-level
+  metric attributed to one co-op. Both are frozen facts or claims anchored to
+  them, not phrasing the loop can rewrite.
+- **−2 red flags, −2 impact.** Every bullet renders as exactly two lines and most
+  close with a trailing participial clause carrying the metric. This is the
+  structural tension already recorded in `cv-config.yaml`: `bullet_lines: [1, 2]`
+  does permit a one-line bullet, and page fit now has 1.1 blank lines of slack,
+  so unlike the two items above this one IS reachable.
+
 ## Trajectory across the method change
 
 | Iteration | ATS | Recruiter | Screen |
@@ -383,7 +517,15 @@ terms, every one of them in a substantive bullet, 0 skills-only.
 | 7 (project-first, first run) | 88 | 87 | **ADVANCE** |
 | 8 | 94 | 90 | ADVANCE |
 | 9 (regression) | 93 | 87 | ADVANCE |
-| 10 (final) | 93 | 91 | ADVANCE |
+| 10 (old rubric, final) | 93 | 91 | ADVANCE |
+| 11 (register rubric) | 99 | 85 | ADVANCE |
+| 12 | 96 | 90 | ADVANCE |
+| 13 (StrideSense removed) | 98 | 90 | ADVANCE |
+
+Recruiter 91 at iteration 10 and 90 at iteration 12 are **not the same 90 points**
+— see the rebalance note above. The honest read of 11 and 12 is that the CV lost
+6 points the moment an absolute register test existed, and recovered 5 of them in
+one pass.
 
 The old method's ceiling was recruiter 72. The new method cleared it on its first
 run without any change to the template, the benchmark, or the frozen employer set.

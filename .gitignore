@@ -14,6 +14,10 @@ build/*/*.txt
 
 config/job-listings/
 *.tex
+# The templates under config/ are SOURCE, not build output. cv-template.tex was
+# grandfathered in before the *.tex rule above existed; without this negation a
+# new template is silently untracked and the repo does not build after a clone.
+!config/*.tex
 *.pdf
 *.log
-build/
+cover-letters/*

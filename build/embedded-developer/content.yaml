@@ -1,0 +1,46 @@
+education_bullet: true
+
+experience:
+  - id: nestle
+    title: "Embedded Software Engineer Co-op"
+    bullets:
+      - 'Wrote a \textbf{C} and \textbf{C++} task layer for an inline fill-weight monitor on a packaging line, sampling and reporting under \textbf{RTOS}, cutting hand-check time per SKU changeover \textbf{35\%} as measured from the plant changeover log.'
+      - 'Traced the monitor \textbf{firmware} against \textbf{CAN} frames from 3 line controllers on a logic-analyzer capture, measuring \textbf{8ms} of slack between each weight report and the next sample window under full line speed.'
+      - 'Implemented the fault-handling \textbf{state machines} for the 2 \textbf{embedded systems} on the line by latching a fault on any missed sample, keeping stale readings out of the QA record and surfacing 3 sensor dropouts in the first month.'
+
+  - id: chase
+    title: "Firmware Developer Co-op"
+    bullets:
+      - 'Built the \textbf{C} and \textbf{C++} driver layer for a handheld scan-reader board at the parts counter, bringing up its \textbf{SPI} link to the scan head and taking dropped scans per shift from \textbf{14 to 2} on the store reader log.'
+      - 'Instrumented the \textbf{I2C} keypad and display path with a \textbf{Python} bench harness replaying 60 captured scan sequences per run under \textbf{pytest} in \textbf{CI/CD}, catching 5 timing violations against the vendor sheet before release.'
+      - 'Ported the diagnostic \textbf{UART} console onto the 4 reader units in the pilot store and documented a fault-code reference for counter staff, identifying a failing unit on site from its console output without a bench return.'
+
+  - id: fanique
+    title: "Embedded Software Intern"
+    bullets:
+      - 'Designed a \textbf{C} black-box state logger for a phone-paired accessory, committing the last 200 state transitions to a ring buffer that stayed readable after a power cut mid-write, so a hung unit was diagnosed from its own history.'
+      - 'Wrote the \textbf{Linux} host reader that recovered the buffer from an unresponsive unit over serial and replayed it as a transition timeline, versioning the trace format in \textbf{Git} against the firmware so a decode stayed valid across revisions.'
+
+projects:
+  - name: "EV Powertrain Sensor Node (McMaster Formula Electric)"
+    tech: "C, STM32, FreeRTOS, CAN"
+    bullets:
+      - 'Wrote bare-metal \textbf{C} drivers for the \textbf{SPI}, \textbf{I2C} and \textbf{UART} peripherals of an \textbf{ARM Cortex-M} STM32 node, tracing a \textbf{CAN} arbitration fault with logic-analyzer captures to a prescaler mismatch 4\% off the bus rate.'
+      - 'Scheduled acquisition as \textbf{FreeRTOS} tasks so that 4 \textbf{ADC} channels held their deadlines under sustained \textbf{CAN} bus load, with task priorities, \textbf{interrupt} handlers and stack depths tuned from bench traces.'
+      - 'Hardened the node against \textbf{CAN} bus dropout with a watchdog and retry path resynchronizing within 2 frames of a fault, verified across 12 practice sessions on the car with no manual reset required.'
+
+  - name: 'HIL Telemetry \& Control System (McMaster Formula Electric)'
+    tech: "Go, C, TCP/IP, CAN"
+    bullets:
+      - 'Built a \textbf{Go} hardware-in-the-loop framework validating embedded \textbf{C} control logic and \textbf{state machines} for an EV powertrain VCU, driving \textbf{30} cases from YAML definitions before the board existed.'
+      - 'Ran a persistent \textbf{TCP/IP} server with concurrent goroutines holding sub-\textbf{50ms} round-trip telemetry over \textbf{CAN} while injecting discrete and analog sensor faults into the controller under test.'
+
+skills:
+  - label: "Languages"
+    items: "C, C++, Embedded C, Python, Go"
+  - label: "Embedded"
+    items: "FreeRTOS, RTOS, CAN, SPI, I2C, UART, ADC, interrupts, state machines, device drivers"
+  - label: "Hardware"
+    items: "STM32, ARM Cortex-M, microcontrollers, bare-metal, board bring-up, logic analyzers"
+  - label: "Tooling"
+    items: "Linux, Git, CI/CD, pytest"

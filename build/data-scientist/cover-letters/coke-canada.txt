@@ -1,0 +1,32 @@
+                        Tath Sikdar
+                                                                 Mississauga, ON
+                        rikisikdar1@gmail.com  linkedin.com/in/tathagata-sikdar  github.com/tathsikdar
+
+July 22, 2026
+
+Hiring Team
+Coke Canada Bottling
+Toronto, ON
+
+Dear Hiring Team,
+
+A demand forecasting model I built during a recent co-op term cut projected stockouts by 18 percent and replaced the reorder
+rule the business had been running. In an earlier term I consolidated 14 competitor pricing feeds into a single warehouse and
+removed 23 percent duplicate records that had been inflating apparent price moves. Forecasting demand and making pricing
+data trustworthy have been the core of my co-op work, and they are what I would bring to the Data Scientist role at Coke
+Canada Bottling.
+
+The scale and the audience are both familiar. I trained a product categorization model across more than 40,000 SKUs,
+reaching 94 percent accuracy against a majority class baseline of 71 percent. When an unannounced supplier feed change later
+cost 9 percent of that precision, I caught it before it reached reporting. More than 500 people now pull their own numbers
+from Power BI and Tableau dashboards I built. The analysts who used to assemble that reporting by hand got about six hours
+a week back. Putting numbers in front of commercial and sales teams in a form they will use is usually what decides whether
+the analysis changes a decision.
+
+I would bring the same emphasis on measurable outcomes to the demand, pricing and promotional work your team is
+expanding. I would welcome the chance to discuss how my background could contribute, and my resume is attached. Thank
+you for your time and consideration.
+
+Sincerely,
+Tath Sikdar
+

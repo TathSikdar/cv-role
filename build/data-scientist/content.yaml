@@ -6,21 +6,21 @@ education_bullet: false
 
 experience:
   - id: nestle
-    title: "Data Scientist Co-op"
+    title: "AI Full Stack Developer"
     bullets:
       - 'Centralized \textbf{14} competitor data sources into a \textbf{PostgreSQL} warehouse by building \textbf{Python} \textbf{ETL} \textbf{data pipelines} with custom \textbf{data cleaning} rules, cutting duplicate listings \textbf{23\%} and ending double counted price moves.'
       - 'Deployed a production-ready \textbf{machine learning} \textbf{classification} model over 40,000+ SKUs at \textbf{94\%} accuracy against a \textbf{71\%} majority-class baseline, by training \textbf{scikit-learn} on \textbf{TF-IDF} features engineered in \textbf{Pandas}.'
       - 'Replaced a manual weekly \textbf{Excel} reporting process with self-serve \textbf{Power BI} and \textbf{Tableau} dashboards on a star-schema \textbf{SQL} warehouse, returning roughly \textbf{6} analyst hours a week across \textbf{500+} enterprise users.'
       - 'Diagnosed a \textbf{9\%} degradation in categorization precision caused by an unannounced supplier feed change, utilizing \textbf{model drift monitoring} and \textbf{K-means} \textbf{clustering} of misclassified SKUs to prevent downstream data disruption.'
   - id: chase
-    title: "Associate Data Scientist Co-op"
+    title: "Software Developer Co-op"
     bullets:
       - 'Cut part-identification errors \textbf{57\%} against the incumbent lookup flow through \textbf{feature engineering} on an existing live transcription feed, scoring precision and recall on a held-out set of 4K annotated conversations.'
       - 'Ruled out \textbf{SARIMA} and Prophet for time series demand \textbf{forecasting} after benchmarking both in \textbf{Python} and \textbf{R}; only a \textbf{gradient boosting} model beat the incumbent reorder rule, cutting projected stockouts \textbf{18\%} in backtest.'
       - 'Traced most of the cloud bill to three query patterns through \textbf{exploratory data analysis} and \textbf{data wrangling} of raw \textbf{Azure} telemetry; rewriting those sync jobs with platform engineering cut redundant calls \textbf{60\%}.'
       - 'Engineered a fault-tolerant, cross-platform (\textbf{Linux}/\textbf{Windows}) nightly forecast pipeline by implementing idempotent writes and automated \textbf{data quality} checks to eliminate data gaps and prevent inventory double-counting during reruns.'
   - id: fanique
-    title: "Data Science Intern"
+    title: "Application Developer Co-op"
     bullets:
       - 'Increased user session duration \textbf{25\%} by identifying the winning onboarding flow from a 6-variant \textbf{A/B test}, sizing each cohort for \textbf{80\%} power and grounding the readout in applied \textbf{statistics} and \textbf{statistical modeling}.'
       - 'Isolated a \textbf{30\%} Day-7 retention gap between web and mobile cohorts by instrumenting a typed cross-platform event schema, then running \textbf{cohort} and \textbf{survival analysis} in \textbf{Python} to scope the product fix the team shipped.'

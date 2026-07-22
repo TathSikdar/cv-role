@@ -1,0 +1,101 @@
+%-------------------------
+% Career-Ops LaTeX Cover Letter Template
+%
+% The preamble through \begin{document} is a VERBATIM copy of the header half of
+% config/cv-template.tex. That is deliberate and load-bearing: the letter and the
+% CV are read side by side, and any drift in font, margins, name block, or the
+% rule under the contact line reads as two documents from two people.
+%
+% If you change a margin, a font size, or the contact block in cv-template.tex,
+% mirror it here in the same commit.
+%------------------------
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Random Stuff %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[letterpaper,11pt]{article}
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome}
+% glyphtounicode is a pdfTeX facility. Tectonic runs XeTeX, which has no
+% \pdfgentounicode primitive and derives the ToUnicode map from the fonts
+% instead. Guard so the template renders under either engine.
+\ifdefined\pdfgentounicode
+  \input{glyphtounicode}
+\fi
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+% Adjust margins — identical to cv-template.tex so the name block, the contact
+% line, and the rule beneath them land on exactly the same pixels in both PDFs.
+\addtolength{\oddsidemargin}{-0.6in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1.19in}
+\addtolength{\topmargin}{-.7in}
+\addtolength{\textheight}{1.4in}
+\urlstyle{same}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+% Ensure the generated pdf is machine readable / ATS parsable
+\ifdefined\pdfgentounicode
+  \pdfgentounicode=1
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Letter body layout  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Block letter: no first-line indent, blank line between paragraphs. \parskip is
+% the only vertical rhythm in the document, so the letter breathes without any
+% hand-placed \vspace inside the generated body.
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{9pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Heading  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+    \begin{center}
+        % NAME
+        {\Huge\scshape {{NAME}}}
+        % SUBHEADING
+        \\ {{CONTACT_LINE}}\\
+        \small
+        % EMAIL
+        \href{mailto:{{EMAIL_URL}}}{\raisebox{-0.2\height}\faEnvelope\  \underline{{{EMAIL_DISPLAY}}}} ~
+        % LINKEDIN
+        \href{{{LINKEDIN_URL}}}{\raisebox{-0.2\height}\faLinkedin\ \underline{{{LINKEDIN_DISPLAY}}}}  ~
+        % GITHUB
+        \href{{{GITHUB_URL}}}{\raisebox{-0.2\height}\faGithub\ \underline{{{GITHUB_DISPLAY}}}}
+    \end{center}
+
+% The CV draws this rule via titlesec's \titlerule inside \titleformat. That
+% macro is only defined inside a title's after-code, so reproduce it directly:
+% \titlerule's default is a 0.4pt rule across the text width.
+\vspace{4pt}
+{\color{black}\rule{\textwidth}{0.4pt}}
+\vspace{10pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Letter  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \small matches the CV's body text size. The name block above is \Huge in both
+% documents, so the two PDFs share one visual hierarchy.
+\small
+
+{{DATE}}
+
+{{RECIPIENT}}
+
+{{SALUTATION}}
+
+{{BODY}}
+
+{{CLOSING}}
+\\
+{{NAME}}
+
+\end{document}

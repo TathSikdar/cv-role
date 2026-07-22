@@ -3,8 +3,8 @@
 ## Education
 
 B.Eng in Mechatronics Engineering Co-op  
-McMaster University, Hamilton, Ontario  
-Sep 2021 - Aug 2026
+McMaster University, Hamilton, ON  
+Sep 2021 - Nov 2026
 
 - Coursework: Embedded, Robotics, DSP, RTOS, DSA | Formula Electric (Software & Controls)
 

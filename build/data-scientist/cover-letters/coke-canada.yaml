@@ -1,0 +1,42 @@
+listing:
+  url: "https://conaservices.jobs2web.com/canada/job/Toronto-Data-Scientist-ON/1409579700/?utm_source=linkedin"
+  company: "Coke Canada Bottling"
+  title: "Data Scientist"
+  location: "Toronto, ON"
+  posted: "16 Jul 2026"
+  retrieved: "2026-07-22"
+  source: "fetched from the posting page (conaservices.jobs2web.com)"
+
+  # Retrieved posting language. Kept for grounding, and used by check_rules to
+  # enforce rule 1: paragraph 1 may not hand any of this back to the reader.
+  quotes:
+    - "analytics initiatives using statistical and machine learning techniques to solve business problems in demand forecasting, pricing, and product optimization"
+    - "ensuring insights are practical, reliable, and business-relevant"
+    - "tools and analytical processes that improve trade spend effectiveness and promotional performance"
+    - "applying data-driven insights as the function expands into operations-focused areas"
+    - "Strong proficiency in data visualization tools such as Power BI (preferred) or Tableau"
+
+  # Rule 1: the opening belongs to the strongest result, not to their words.
+  opening_result: "18 percent reduction in projected stockouts from a demand forecasting model (Chase Auto Parts)"
+
+  # Requirements answered with a metric: demand forecasting, pricing data, large
+  # datasets, tree-based modeling, Power BI and Tableau, non-technical audiences.
+  # Not claimed: trade spend and promotional analysis. Rule 6 says do not
+  # annotate the gap, so the letter simply leads with what it can evidence.
+  gaps:
+    - "trade spend and promotional analysis: no CV evidence, left unstated per rule 6"
+    - "posting asks 3+ years; CV shows three co-op terms"
+
+recipient:
+  - "Hiring Team"
+  - "Coke Canada Bottling"
+  - "Toronto, ON"
+
+salutation: "Dear Hiring Team,"
+
+body:
+  - 'A demand forecasting model I built during a recent co-op term cut projected stockouts by 18 percent and replaced the reorder rule the business had been running. In an earlier term I consolidated 14 competitor pricing feeds into a single warehouse and removed 23 percent duplicate records that had been inflating apparent price moves. Forecasting demand and making pricing data trustworthy have been the core of my co-op work, and they are what I would bring to the Data Scientist role at Coke Canada Bottling.'
+  - 'The scale and the audience are both familiar. I trained a product categorization model across more than 40,000 SKUs, reaching 94 percent accuracy against a majority class baseline of 71 percent. When an unannounced supplier feed change later cost 9 percent of that precision, I caught it before it reached reporting. More than 500 people now pull their own numbers from Power BI and Tableau dashboards I built. The analysts who used to assemble that reporting by hand got about six hours a week back. Putting numbers in front of commercial and sales teams in a form they will use is usually what decides whether the analysis changes a decision.'
+  - 'I would bring the same emphasis on measurable outcomes to the demand, pricing and promotional work your team is expanding. I would welcome the chance to discuss how my background could contribute, and my resume is attached. Thank you for your time and consideration.'
+
+closing: "Sincerely,"

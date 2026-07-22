@@ -8,6 +8,10 @@ grades them through ATS + recruiter review loops.
 - **To generate a CV, invoke the `cv-role` skill.** Do not improvise the
   pipeline — the skill carries the loop logic, thresholds, and grader isolation
   rules that make the output meaningful.
+- **To write a cover letter, invoke the `cover-letter` skill.** It takes a CV
+  slug and a listing URL, and writes against the *rendered CV plus the fetched
+  listing only*. `config/master_cv.md` is out of scope there: the letter must
+  argue for the story the accompanying CV actually tells.
 - Never hand-edit `<slug>.tex`. It is generated. Edit `build/<slug>/content.yaml`
   and rerun `python scripts/build_cv.py <slug>`.
 - **`config/frozen.yaml` is ground truth.** Education, company names, dates, and
@@ -36,6 +40,19 @@ grades them through ATS + recruiter review loops.
 - **Bullets under one employer are written as a set**, not independently. Each
   entry's bullets must add up to one describable job.
 
+## Cover letter rules (enforced by the build)
+
+- **The letter never restates the CV.** A run of seven consecutive words shared
+  with the rendered CV is a hard build failure; a sentence 60% similar to a CV
+  line warns. The letter's content is the reasoning, motivation and fit that a
+  bullet had no room for.
+- **The CV is the evidence base and the ceiling.** The letter may explain
+  anything on it and may claim nothing beyond it.
+- **Never invent a fact about the employer.** Every claim about the company
+  traces to text actually fetched this run.
+- Same no-dash and LaTeX-escaping rules as the CV. First person is correct here.
+- **The page is not required to be full**, unlike the CV. Only overrun fails.
+
 ## Keywords
 
 Each role's benchmark carries a generated `## Keyword frequency` table: how many
@@ -49,11 +66,14 @@ table, and check both tiers before swapping one term for another.
 ## Layout
 
 ```
-config/     master_cv.md, cv-template.tex, cv-config.yaml, frozen.yaml,
-            keyword-synonyms.yaml, job-listings/
-scripts/    build_cv.py     — assemble, render, extract, verify
-            keyword_freq.py — listing frequency table + CV coverage report
-build/      per-role content.yaml, extracted PDF text, keyword-coverage.md
+config/     master_cv.md, cv-template.tex, cover-letter-template.tex,
+            cv-config.yaml, frozen.yaml, keyword-synonyms.yaml, job-listings/
+scripts/    build_cv.py           — assemble, render, extract, verify
+            build_cover_letter.py — same, for one listing's cover letter
+            keyword_freq.py       — listing frequency table + CV coverage report
+build/      per-role content.yaml, extracted PDF text, keyword-coverage.md,
+            cover-letters/<id>.yaml
+cover-letters/  rendered <slug>-<id>-cover-letter.tex / .pdf
 ./          <slug>.tex, <slug>.pdf, <slug>_analysis.md
 ```
 

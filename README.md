@@ -27,10 +27,15 @@ python scripts/build_cv.py <slug>
 
 | Path | Contents |
 |---|---|
-| `<slug>.pdf` / `<slug>.tex` | the rendered CV and its generated source |
-| `<slug>_analysis.md` | full ATS + recruiter iteration history |
+| `base-cv/<slug>.pdf` / `.tex` | the rendered role CV and its generated source |
+| `job-cv/<base>-<job-id>.pdf` | CVs tailored to one posting (`/job-cv`) |
+| `cover-letters/` | rendered cover letters (`/cover-letter`) |
 | `build/<slug>/content.yaml` | generated content — the editable source |
+| `build/<slug>/analysis.md` | full ATS + recruiter iteration history |
 | `config/job-listings/<slug>.md` | cached listings used as the fixed benchmark |
+
+Every one of those directories is generated and gitignored; nothing is ever
+written to the repo root.
 
 ## How it stays honest
 

@@ -1,0 +1,58 @@
+# Resume
+
+<!--
+Copy this file to config/master_cv.md and replace it with the real CV. The real
+file is gitignored because it is personal history.
+
+This is the source pool the pipeline reads for PROJECTS and for deriving
+`technology_exposure` in frozen.yaml. Experience bullets are NOT retargeted from
+here — cv-role SKILL.md Step 2 designs those from the keyword table — so write
+this file for yourself, not for any one role. Facts, numbers and raw notes are
+more useful here than polished prose.
+-->
+
+## Education
+
+B.Eng in Your Program
+Your University, City, PROV
+Sep 2021 - Aug 2026
+
+- Coursework: Course, Course, Course | Team or Club (Role)
+
+## Work Experience
+
+Your Title
+Acme Corp, City, PROV
+Apr 2024 - Dec 2025
+Python, React, TypeScript, Azure, SQL
+
+- What you accomplished, as measured by a real number, by doing the thing that
+  produced it. One bullet per genuine piece of work; keep the real metrics.
+- Another one.
+
+Your Title
+Initech, City, PROV
+Sep 2023 - Apr 2024
+Node.js, Express.js, Electron, SQL
+
+- Same again.
+
+## Projects
+
+Project Name - One Line Description (github.com/you/project)
+Tech, Tech, Tech
+
+- What it does and what it achieved, with numbers where they exist.
+- Raw jot notes are fine here: architecture decisions, known limits, the
+  constraint that shaped the design. The generator adapts these into bullets.
+
+## Skills
+
+Programming
+Python, TypeScript, C++, SQL
+
+Frameworks
+React, Node.js, PyTorch
+
+Technologies
+Azure, Docker, Linux, Git, CI/CD

@@ -1,23 +1,22 @@
-# Tectonic build artifacts
-*.log
-*.aux
-*.out
-*.synctex.gz
-
 # Python
 __pycache__/
 *.pyc
 
-# Generated CVs are committed on purpose — they are the deliverable.
-# Extracted text is a derived intermediate.
-build/*/*.txt
+# Generated output. Every file in these directories is build product: the
+# rendered CVs and letters, their LaTeX, tectonic logs, extracted text, and the
+# per-role analysis history. Nothing here is a source of truth — rebuild it with
+# scripts/build_cv.py or scripts/build_cover_letter.py.
+# Leading slash matters: an unanchored `job-cv/` would also swallow the
+# .claude/skills/job-cv/ skill, which is source.
+/base-cv/
+/job-cv/
+/cover-letters/
+/build/
 
+# Personal data. Real contact details, employers, and CV history. Each has a
+# tracked .example beside it showing the structure: copy it and fill it in.
+config/frozen.yaml
+config/master_cv.md
+
+# Fetched job postings, cached per role.
 config/job-listings/
-*.tex
-# The templates under config/ are SOURCE, not build output. cv-template.tex was
-# grandfathered in before the *.tex rule above existed; without this negation a
-# new template is silently untracked and the repo does not build after a clone.
-!config/*.tex
-*.pdf
-*.log
-cover-letters/*

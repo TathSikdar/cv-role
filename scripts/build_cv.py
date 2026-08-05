@@ -1,17 +1,23 @@
 #!/usr/bin/env python3
 """Assemble, render, extract and verify a role-targeted CV.
 
-    python scripts/build_cv.py <role-slug>
+    python scripts/build_cv.py <role-slug> [region]
+
+`region` is optional and one of `us` or (default) Canadian. It selects only the
+line under the name — `contact_line_us` vs `contact_line` in frozen.yaml — and
+nothing else: the body content is identical, so `/us-version <slug>` is the same
+CV with a US header. The US build writes to `<slug>-us.*` so both survive.
 
 Reads:
     config/frozen.yaml              immutable facts (never generated)
     config/cv-template.tex          LaTeX template with {{PLACEHOLDER}} slots
     build/<slug>/content.yaml       generated titles / bullets / projects / skills
 
-Writes:
-    <slug>.tex                      root, per project convention
-    <slug>.pdf                      root, rendered by tectonic
-    build/<slug>/<slug>.txt         pdftotext extraction — what the ATS grader reads
+Writes (<stem> is <slug>, or <slug>-us for the US region; <out> is base-cv/ for a
+role listed in cv-config.yaml and job-cv/ for anything else):
+    <out>/<stem>.tex                assembled LaTeX
+    <out>/<stem>.pdf                rendered by tectonic
+    build/<slug>/<stem>.txt         pdftotext extraction — what the ATS grader reads
 
 Exits non-zero if the render fails or if any frozen fact was altered. The
 generator never emits frozen fields in the first place; this is the backstop
@@ -243,7 +249,14 @@ def build_education(frozen: dict, content: dict) -> str:
     )
 
 
-def render_template(frozen: dict, content: dict) -> tuple[str, list[str]]:
+def contact_line_for(contact: dict, region: str) -> str:
+    """The line under the name for this region. US falls back to Canadian."""
+    if region == "us":
+        return contact.get("contact_line_us") or contact.get("contact_line", "")
+    return contact.get("contact_line", "")
+
+
+def render_template(frozen: dict, content: dict, region: str = "canada") -> tuple[str, list[str]]:
     template = (CONFIG / "cv-template.tex").read_text(encoding="utf-8")
 
     experience, p1 = build_experience(frozen, content)
@@ -253,7 +266,7 @@ def render_template(frozen: dict, content: dict) -> tuple[str, list[str]]:
     contact = frozen.get("contact", {})
     slots = {
         "NAME": contact.get("name", ""),
-        "CONTACT_LINE": contact.get("contact_line", ""),
+        "CONTACT_LINE": contact_line_for(contact, region),
         "EMAIL_URL": contact.get("email_url", ""),
         "EMAIL_DISPLAY": contact.get("email_display", ""),
         "LINKEDIN_URL": contact.get("linkedin_url", ""),
@@ -880,17 +893,46 @@ def report_keyword_coverage(slug: str) -> None:
 # main
 # --------------------------------------------------------------------------
 
+def output_dir(slug: str, config: dict) -> Path:
+    """Where the .tex/.pdf land: base-cv/ for a configured role, job-cv/ otherwise.
+
+    A job CV's slug is `<base>-<job-id>`, which is never a role in cv-config.yaml,
+    so membership there is the whole test. Nothing is generated into the repo root.
+    """
+    roles = {r.get("slug") for r in config.get("roles") or []}
+    return ROOT / ("base-cv" if slug in roles else "job-cv")
+
+
+def parse_region(token: str) -> str | None:
+    """Normalize a region token, or None if it is not one we recognize."""
+    t = token.lower()
+    if t in ("ca", "canada"):
+        return "canada"
+    if t in ("us", "usa"):
+        return "us"
+    return None
+
+
 def main(argv: list[str]) -> int:
-    if len(argv) != 2:
+    if len(argv) not in (2, 3):
         print(__doc__)
         return 2
     slug = argv[1]
+    region = "canada"
+    if len(argv) == 3:
+        region = parse_region(argv[2])
+        if region is None:
+            print(f"[FAIL] unknown region {argv[2]!r}; use 'us' or omit for Canadian")
+            return 2
+    # The US CV is the same content with a US header, so it renders to a distinct
+    # stem and both regions coexist in the output folder.
+    stem = slug if region == "canada" else f"{slug}-us"
 
     try:
         frozen = load_yaml(CONFIG / "frozen.yaml")
         config = load_yaml(CONFIG / "cv-config.yaml")
         content = load_content(slug)
-        tex, hazards = render_template(frozen, content)
+        tex, hazards = render_template(frozen, content, region)
     except BuildError as exc:
         print(f"[FAIL] {exc}")
         return 1
@@ -924,25 +966,33 @@ def main(argv: list[str]) -> int:
               "not merely\nmatch the register of the bullets around it.")
         return 1
 
-    tex_path = ROOT / f"{slug}.tex"
-    pdf_path = ROOT / f"{slug}.pdf"
+    # tectonic writes its .pdf and .log beside the .tex, so pointing the .tex at
+    # base-cv/ or job-cv/ is enough to keep the whole render out of the root.
+    render_dir = output_dir(slug, config)
+    render_dir.mkdir(parents=True, exist_ok=True)
+    tex_path = render_dir / f"{stem}.tex"
+    pdf_path = render_dir / f"{stem}.pdf"
     out_dir = BUILD / slug
     out_dir.mkdir(parents=True, exist_ok=True)
-    txt_path = out_dir / f"{slug}.txt"
+    txt_path = out_dir / f"{stem}.txt"
 
     tex_path.write_text(tex, encoding="utf-8")
-    print(f"[ok]   wrote {tex_path.name}")
+    print(f"[ok]   wrote {tex_path.relative_to(ROOT)}")
 
     try:
         run_tectonic(tex_path)
-        print(f"[ok]   rendered {pdf_path.name}")
+        print(f"[ok]   rendered {pdf_path.relative_to(ROOT)}")
         extracted = run_pdftotext(pdf_path, txt_path)
         print(f"[ok]   extracted {txt_path.relative_to(ROOT)} ({len(extracted)} chars)")
     except BuildError as exc:
         print(f"[FAIL] {exc}")
         return 1
 
-    report_keyword_coverage(slug)
+    # Keyword coverage is a property of the body, which is identical across
+    # regions; the US build would only re-read the Canadian extract and clobber
+    # the coverage file with a spurious regression, so run it for Canada only.
+    if region == "canada":
+        report_keyword_coverage(slug)
 
     failures = verify_frozen(frozen, extracted, content)
     if failures:
@@ -1002,7 +1052,7 @@ def main(argv: list[str]) -> int:
     print(f"[ok]   spacing (intra {spacing.intra:.1f}pt < inter "
           f"{spacing.inter:.1f}pt), bullet lengths, and page fit all within budget")
 
-    print(f"\nBuild complete: {slug}.pdf")
+    print(f"\nBuild complete: {pdf_path.relative_to(ROOT)}")
     return 0
 
 

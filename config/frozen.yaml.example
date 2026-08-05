@@ -1,0 +1,115 @@
+# =============================================================================
+# FROZEN FACTS — the immutable spine of every generated CV.
+#
+# Copy this file to config/frozen.yaml and fill it in with real facts. The real
+# file is gitignored because it carries personal contact details and employment
+# history; this example exists so a fresh clone knows the shape.
+#
+# Nothing here is ever rewritten by CV generation. build_cv.py injects these
+# values straight into the LaTeX and the generator only supplies position TITLES
+# and BULLETS, so drift is impossible by construction; the build then re-checks
+# the *rendered PDF text* as a backstop.
+#
+# Edit this file when the underlying facts change. Never edit it to make a CV
+# score better.
+# =============================================================================
+
+contact:
+  name: "Firstname Lastname"
+  # Short line under the name (phone, city, or work authorization). Rendered
+  # into both cv-template.tex and cover-letter-template.tex so the two headers
+  # stay identical. $|$ is the safe separator; a bare | is unreliable in text
+  # mode. Cover-letter rule 15 requires the phone to be here.
+  contact_line: "City, PROV $|$ 555-555-5555"
+  # US variant, selected for region "us" (`/us-version <slug>`, or `region: us`
+  # in a letter). Only the header differs between regions; the body is identical.
+  contact_line_us: "City, ST $|$ Work Authorization $|$ 555-555-5555"
+  email_display: "you@example.com"
+  email_url: "you@example.com"
+  linkedin_display: "linkedin.com/in/your-handle"
+  linkedin_url: "https://www.linkedin.com/in/your-handle"
+  github_display: "github.com/your-handle"
+  github_url: "https://github.com/your-handle"
+
+# ---------------------------------------------------------------------------
+# EDUCATION — injected verbatim as LaTeX. Institution, degree, dates and
+# location are fully frozen and always rendered.
+# ---------------------------------------------------------------------------
+education_latex: |
+  \resumeSubheading
+    {Your University}{Sep 2021 - Aug 2026}
+    {B.Eng in Your Program}{City, PROV}
+
+# The coursework line. Frozen in WORDING — never reworded or retargeted at a
+# role, because that would misrepresent what the degree actually contained.
+#
+# It is OPTIONAL: a role may drop it with `education_bullet: false` in
+# build/<slug>/content.yaml. Omitting a true fact is not misrepresentation;
+# rewriting it would be. Escape & as \& — this string goes into LaTeX.
+education_bullet: 'Coursework: Course, Course, Course | Team or Club (Role)'
+
+# ---------------------------------------------------------------------------
+# WORK EXPERIENCE — company / dates / location are frozen. The generator
+# supplies only `title` and `bullets` per `id`, in this exact order. Entries may
+# not be added, removed, or reordered.
+#
+# `domain` is the employer's REAL business. Under the project-first generation
+# method (cv-role SKILL.md Step 2) the generator invents a project per entry and
+# `domain` is the anchor that keeps it plausible: the project must solve a
+# problem this business actually has. It is never rendered and never scored.
+# ---------------------------------------------------------------------------
+experience:
+  - id: acme
+    company: "Acme Corp"
+    dates: "Apr 2024 - Dec 2025"
+    location: "City, PROV"
+    domain: >-
+      What this employer actually does, in enough detail to constrain an
+      invented project: the systems, the users, the data, the physical or
+      commercial context.
+  - id: initech
+    company: "Initech"
+    dates: "Sep 2023 - Apr 2024"
+    location: "City, PROV"
+    domain: >-
+      Same again for the second employer.
+
+# ---------------------------------------------------------------------------
+# TECHNOLOGY EXPOSURE — the closed set of technologies the candidate may be
+# described as having used, anywhere in generated experience bullets.
+#
+# Derive it once from config/master_cv.md, the degree, and extracurricular work.
+# This is the second anchor for project-first generation: the project is
+# invented, the technology it is built from is not. A term outside this list
+# stays out of the CV even when the listings demand it, and is recorded as
+# unreachable in the analysis file rather than claimed.
+#
+# build_cv.py warns when an experience bullet names a technology that is not
+# here. Extend it only when the candidate genuinely picks something up, never to
+# make a keyword reachable. Comment the reason inline when you add one.
+# ---------------------------------------------------------------------------
+technology_exposure:
+  # languages
+  - Python
+  - TypeScript
+  - C++
+  - SQL
+  # platforms and tooling
+  - Linux
+  - Git
+  - Docker
+  - CI/CD
+  # frameworks
+  - React
+  - Node.js
+  - PyTorch
+
+# ---------------------------------------------------------------------------
+# Date strings the verifier tolerates anywhere in the rendered PDF. Any date
+# range in the PDF that is not listed here is a hard failure — this is what
+# catches an invented or stretched duration.
+# ---------------------------------------------------------------------------
+allowed_date_ranges:
+  - "Sep 2021 - Aug 2026"
+  - "Apr 2024 - Dec 2025"
+  - "Sep 2023 - Apr 2024"

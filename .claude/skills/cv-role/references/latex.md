@@ -10,7 +10,8 @@ facts. This file documents the contract.
 python scripts/build_cv.py <slug>
 ```
 
-Produces `<slug>.tex` and `<slug>.pdf` in the repo root, and
+Produces `<slug>.tex` and `<slug>.pdf` in `base-cv/` (or `job-cv/` for a
+job-targeted slug), and
 `build/<slug>/<slug>.txt` (the pdftotext extraction the ATS grader reads).
 Non-zero exit means the build failed — never grade or proceed past a failure.
 

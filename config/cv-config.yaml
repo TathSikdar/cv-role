@@ -21,8 +21,11 @@ level: new-grad
 
 # ---------------------------------------------------------------------------
 # ROLES TO GENERATE
-# `slug` drives every output filename: <slug>.tex, <slug>.pdf,
-# <slug>_analysis.md, config/job-listings/<slug>.md
+# `slug` drives every output filename: base-cv/<slug>.tex, base-cv/<slug>.pdf,
+# build/<slug>/analysis.md, config/job-listings/<slug>.md
+#
+# Membership here is also what build_cv.py uses to route output: a slug listed
+# below renders into base-cv/, anything else into job-cv/.
 # Comment out a role to skip it this run.
 # ---------------------------------------------------------------------------
 roles:

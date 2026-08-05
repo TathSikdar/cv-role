@@ -407,7 +407,7 @@ You may read: config/frozen.yaml, config/job-listings/<slug>.md,
 config/cv-config.yaml, .claude/skills/cv-role/references/latex.md
 
 Do NOT read: config/master_cv.md, any existing build/<slug>/content.yaml,
-<slug>_analysis.md, build/<slug>/keyword-coverage.md, or either rubric in
+build/<slug>/analysis.md, build/<slug>/keyword-coverage.md, or either rubric in
 .claude/skills/cv-role/references/. Writing directly at a rubric produces
 rubric-shaped prose, which is exactly what the graders penalize as
 machine-generated.
@@ -673,7 +673,7 @@ tell you exactly how much to add or cut.
 python scripts/build_cv.py <slug>
 ```
 
-Produces `<slug>.tex`, `<slug>.pdf`, `build/<slug>/<slug>.txt`, and
+Produces `base-cv/<slug>.tex`, `base-cv/<slug>.pdf`, `build/<slug>/<slug>.txt`, and
 `build/<slug>/keyword-coverage.md`.
 
 **A non-zero exit is a hard stop.** Fix `content.yaml` and rebuild. Never edit
@@ -763,16 +763,16 @@ Seniority level: <level from cv-config.yaml>
 Score keyword coverage against the benchmark's `## Keyword frequency` table.
 Use its counts and tiers as given; do not recount across the listings.
 
-Do NOT read config/master_cv.md, build/<slug>/content.yaml, <slug>.tex,
+Do NOT read config/master_cv.md, build/<slug>/content.yaml, base-cv/<slug>.tex,
 build/<slug>/keyword-coverage.md, build/<slug>/generation-notes.md, or any
-*_analysis.md file. You are simulating an automated parser with no prior context.
+analysis.md file. You are simulating an automated parser with no prior context.
 
 Return only the rubric's output block.
 """)
 ```
 
 and the same shape for the recruiter, pointing at `recruiter-rubric.md` and
-additionally allowing `<slug>.pdf` (a human recruiter sees the rendered page).
+additionally allowing `base-cv/<slug>.pdf` (a human recruiter sees the rendered page).
 Carry the same "do NOT read" list.
 
 `build/<slug>/generation-notes.md` is on that list for the strongest reason of
@@ -791,7 +791,7 @@ Do not summarize or soften what comes back. Their numbers are the numbers.
 
 ## Step 5 — Record
 
-**Append** an iteration section to `<slug>_analysis.md` in the repo root. Never
+**Append** an iteration section to `build/<slug>/analysis.md`. Never
 overwrite: the trajectory across iterations is the point, and a change that made
 things worse is only visible in the history.
 
@@ -917,9 +917,9 @@ from where the first stopped and appends to the same analysis file.
 
 | Path | Contents |
 |---|---|
-| `<slug>.tex` | generated LaTeX |
-| `<slug>.pdf` | rendered CV |
-| `<slug>_analysis.md` | full iteration history |
+| `base-cv/<slug>.tex` | generated LaTeX |
+| `base-cv/<slug>.pdf` | rendered CV |
+| `build/<slug>/analysis.md` | full iteration history |
 | `build/<slug>/content.yaml` | generated content (the editable source) |
 | `build/<slug>/<slug>.txt` | extracted text the ATS grader scores |
 | `build/<slug>/keyword-coverage.md` | which terms landed and which slipped — **never shown to a grader** |

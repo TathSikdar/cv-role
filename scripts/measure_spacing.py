@@ -90,9 +90,13 @@ def main(argv: list[str]) -> int:
     if len(argv) != 2:
         print(__doc__)
         return 2
-    pdf = ROOT / f"{argv[1]}.pdf"
-    if not pdf.exists():
-        print(f"missing {pdf.name}")
+    pdf = next(
+        (ROOT / d / f"{argv[1]}.pdf" for d in ("base-cv", "job-cv", "cover-letters")
+         if (ROOT / d / f"{argv[1]}.pdf").exists()),
+        None,
+    )
+    if pdf is None:
+        print(f"missing {argv[1]}.pdf in base-cv/, job-cv/ or cover-letters/")
         return 1
 
     s = analyze(pdf)

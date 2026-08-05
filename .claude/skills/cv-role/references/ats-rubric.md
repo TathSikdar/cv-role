@@ -19,7 +19,7 @@ only what is mechanically present in the extracted text.
 - `config/cv-config.yaml` — for `level` (seniority calibration).
 
 **Do not read** `config/master_cv.md`, `build/<slug>/content.yaml`, the `.tex`
-file, `build/<slug>/keyword-coverage.md`, or any `*_analysis.md`. Seeing the
+file, `build/<slug>/keyword-coverage.md`, or any `build/<slug>/analysis.md`. Seeing the
 source material or prior reasoning inflates scores — `keyword-coverage.md` in
 particular is the generating agent's own answer key, and reading it means
 scoring our analysis rather than the page. If you have somehow seen them, say so

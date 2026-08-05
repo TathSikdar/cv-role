@@ -12,6 +12,24 @@ grades them through ATS + recruiter review loops.
   slug and a listing URL, and writes against the *rendered CV plus the fetched
   listing only*. `config/master_cv.md` is out of scope there: the letter must
   argue for the story the accompanying CV actually tells.
+- **To tailor a built CV to one specific posting, invoke the `job-cv` skill.** It
+  takes a base CV slug and a listing URL, computes the skill gap against that
+  posting, makes the *minimal* edits to close it, and renders into `job-cv/`.
+  Unlike `cv-role` it redesigns nothing: fewest bullets changed wins. It builds
+  the perfect candidate for the posting, claiming every skill it requires; those
+  claims live in the job CV only, never written back to `config/frozen.yaml`.
+- **To prep for an interview on a built CV, invoke `interview-hr` (behavioral /
+  recruiter screen) or `interview-technical` (technical screen).** Each takes a CV
+  slug and a listing URL and generates the questions *that* application will face,
+  each with a prep note. Same grounding law as the cover letter: rendered CV plus
+  fetched listing only, never the master CV. `interview-technical` doubles as a
+  defensibility audit — it flags where the invented projects will crack under
+  probing.
+- **Every CV and cover letter has a Canadian (default) and a US header.** The
+  only difference is the line under the name — `contact_line` vs
+  `contact_line_us` in `config/frozen.yaml`; the body is identical. Make the US
+  CV with the `us-version` skill (`python scripts/build_cv.py <slug> us`, output
+  `<slug>-us.pdf`); pick the US cover-letter header with the `region: us` input.
 - Never hand-edit `<slug>.tex`. It is generated. Edit `build/<slug>/content.yaml`
   and rerun `python scripts/build_cv.py <slug>`.
 - **`config/frozen.yaml` is ground truth.** Education, company names, dates, and
@@ -42,12 +60,15 @@ grades them through ATS + recruiter review loops.
 
 ## Cover letter rules (enforced by the build)
 
+- **Nine rules govern the prose**, in `references/guidelines.md`, most of them
+  enforced by `check_rules`. The load-bearing ones: lead with hard metrics, never
+  lecture, never state a gap, never criticize how the business operates, never
+  close by proposing to review their processes.
 - **The letter never restates the CV.** A run of seven consecutive words shared
-  with the rendered CV is a hard build failure; a sentence 60% similar to a CV
-  line warns. The letter's content is the reasoning, motivation and fit that a
-  bullet had no room for.
-- **The CV is the evidence base and the ceiling.** The letter may explain
-  anything on it and may claim nothing beyond it.
+  with the rendered CV is a hard build failure. What the letter adds is
+  *selection and relevance* (which results matter here), never methodology.
+- **The CV is the evidence base and the ceiling.** Every figure in the letter
+  must appear on the rendered CV. Never invent a metric.
 - **Never invent a fact about the employer.** Every claim about the company
   traces to text actually fetched this run.
 - Same no-dash and LaTeX-escaping rules as the CV. First person is correct here.
@@ -72,10 +93,17 @@ scripts/    build_cv.py           — assemble, render, extract, verify
             build_cover_letter.py — same, for one listing's cover letter
             keyword_freq.py       — listing frequency table + CV coverage report
 build/      per-role content.yaml, extracted PDF text, keyword-coverage.md,
-            cover-letters/<id>.yaml
+            analysis.md, cover-letters/<id>.yaml
+base-cv/    rendered <slug>.tex / .pdf for each role in cv-config.yaml
+job-cv/     rendered <base>-<job-id>.tex / .pdf / -notes.md per posting
 cover-letters/  rendered <slug>-<id>-cover-letter.tex / .pdf
-./          <slug>.tex, <slug>.pdf, <slug>_analysis.md
 ```
+
+**Nothing is generated in the repo root.** `build_cv.py` routes by slug: a slug
+listed under `roles:` in `config/cv-config.yaml` renders into `base-cv/`,
+anything else into `job-cv/`. All four generated directories are gitignored, as
+are `config/frozen.yaml` and `config/master_cv.md` — both personal, both with a
+tracked `.example` beside them.
 
 `config/cv-config.yaml` is the file to edit between runs: seniority `level`,
 which roles to generate, and loop thresholds.

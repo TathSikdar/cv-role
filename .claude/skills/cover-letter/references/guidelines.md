@@ -11,110 +11,202 @@ judgement is the letter's entire content.
 
 ---
 
-## The nine rules
+## The seven principles
 
-These override anything else in this file. Each one exists because a letter this
-pipeline produced broke it.
+Every rule this pipeline has accumulated groups under one of seven principles.
+Each rule still carries its original number in **(parentheses)** because the
+build script reports failures by that number; the numbers are stable tags, not an
+order to read in. Where two rules said the same thing at different scope, they are
+stated once here.
 
-**1. Never regurgitate the job description.** The hiring manager wrote the
-posting. Do not spend the first paragraph, your only hook, summarizing the role
-back to them. Open with the value you bring.
+### I. Say something the CV cannot (1, 2, 4, 5, 10, 13, 25)
 
-**2. Do not lecture the hiring manager.** This is a job application, not a talk.
-Do not spend paragraphs on the philosophical merits of one modeling approach over
-another. Show expertise through achievements, not through argument.
+The reader has the CV. The letter earns its page only by adding what a bullet had
+no room for: which of your results matter to *this* employer, and why.
 
-**3. No pseudo-intellectual word salad.** If a sentence needs a second read,
-delete it. Convoluted phrasing does not read as intelligent, it reads as a bad
-communicator. The offending original:
+- **Do not regurgitate the posting (1).** They wrote it. Summarizing the role
+  back to them wastes the letter.
+- **Do not lecture (2).** No paragraphs on the merits of one method over another.
+  Expertise shows through achievements, not argument.
+- **Lead with hard metrics (4).** Every substantive claim carries a number: a
+  percentage, a volume, hours, scale. A letter with no numbers is incomplete.
+- **Sell value, not intellect (5).** Prove you solve their problems, not that you
+  are the cleverest person in the room.
+- **No robot resume (10).** Not five bullets with the icons deleted. Each metric
+  lives inside a sentence about why it matters here. If you can reorder a
+  paragraph's sentences with no loss, it is a list, not a letter.
+- **Let evidence speak; do not preach (13, 25).** Put a period after a good number
+  and move on. Do not tack on a lesson about what "turns an analysis into a
+  decision" (13, a trailing clause), and do not state your opinion as a law of
+  business, "a portfolio stays manageable only when the reporting is self-serve"
+  (25, the same fault at whole-claim scale). A clause about *their business* is
+  tailoring and belongs; a clause about *analytics in general* is preaching and
+  goes.
 
-> "What a single line cannot show is the choice I would actually bring to your
-> team, which was the baseline."
+**The tension inside this principle:** rule 4 demands numbers, rule 10 forbids a
+pile of them. Both hold because a cited metric wrapped in *why it matters to this
+employer* is not a bullet. The connective tissue is relevance (which is also what
+principle II's research supplies), never methodology.
 
-**4. Hard metrics over methodology.** Nobody cares how elegant the model was
-without the outcome. Every substantive claim carries a measurable business
-result: the percentage, the volume, the hours, the scale. A letter with no
-numbers is incomplete.
+### II. Stay grounded and honest (6, 7, 8, 14)
 
-**5. Sell your value, not your intellect.** Prove you can solve their problems
-and be a helpful employee, not that you are the smartest person in the room.
+Every claim traces to a source. Nothing is invented to fill a gap.
 
-**6. Never confess ignorance and assert authority in the same breath.** Never
-write that you have "no direct experience" in something and then declare you have
-"a fairly specific view" on how it should be done. It reads as someone who will
-be impossible to manage. If a gap exists, either let a relevant result speak to
-it or leave it alone. The CV states your experience; the letter does not need to
-annotate what is missing from it.
+- **Do not confess a gap and assert authority together (6).** Never pair "no
+  direct experience" with "a fairly specific view". It reads as unmanageable. The
+  CV states your experience; the letter does not annotate what is missing.
+- **Do not insult the business (7).** Calling a normal practice "a question
+  nobody asked" reads as detached from how companies operate.
+- **Employment evidence over personal projects (8).** Do not bridge an
+  enterprise-scale gap with a personal project. One belongs only when it is
+  genuinely the best evidence for something the role centrally needs.
+- **No form letter (14).** If the letter still reads perfectly with a
+  competitor's name swapped in, bin it. At least one claim must be true of this
+  employer and false of the obvious alternative, which means researching the
+  *company*, not the posting. Record what you find in `listing.company_facts`
+  with a source. See "Never invent a fact about the company" below.
+- **Never invent a metric.** Every figure appears on the rendered CV. If the CV
+  has no dollar figure, the letter has none (mirrors `SKILL.md` T4).
 
-**7. Do not insult the business or its stakeholders.** Calling a standard
-business practice, such as asking for a single expected value, "a question nobody
-asked" insults the people who run the company and reads as detached from how
-businesses actually operate.
+### III. The opening (1, 11, 16)
 
-**8. Match the scale of your examples to the role.** Do not bridge a gap in
-enterprise experience with a personal project. Comparing a personal forecasting
-exercise to the trade spend of a national bottler reads as naive, not adaptable.
-**Draw evidence from employment first.** A personal project belongs in a letter
-only when it is the best evidence for something the role centrally needs, never
-as a substitute for enterprise scale.
+Three rules landed on the first sentence; the law is their intersection.
 
-**9. Earn the interview, do not demand an audit.** Do not close as a consultant
-arriving to review their processes: "I would welcome a conversation about where
-the forecasting work sits today" is an audit proposal. Close with a standard
-professional call to action about the value you would deliver.
+| Rule | Bans in the opening |
+|---|---|
+| 1 | handing the posting's description of the job back |
+| 11 | a bare statistic with no human lead-in |
+| 16 | "I am applying for", which is filler |
+
+What survives all three is a **tailored hook**: one researched insight into how
+this employer's business actually works, framed as a problem, false of a
+competitor. Then name the role and company in the second sentence, where it costs
+nothing, and transition into your strongest result.
+
+> "An independent bottler supplying every province through 50 distribution
+> centres carries a forecasting problem a single-site manufacturer never has to
+> solve." Correct: researched, a problem, false of a competitor.
+>
+> "I am applying for the Data Scientist position at Coke Canada Bottling."
+> Filler (16).
+>
+> "Coke Canada is a leading beverage company seeking a data scientist." Their own
+> words back at them (1).
+>
+> "I cut projected stockouts by 18 percent." A bare statistic (11).
+
+### IV. The close (9, 19, 26)
+
+- **Assert, do not hedge (26).** Not "how I could contribute" but "how my
+  background will directly contribute to your operations."
+- **Do not propose an audit (9).** "I would welcome a conversation about where
+  the forecasting work sits today" is a consultant reviewing their processes.
+  Close with a call to action about the value you deliver.
+- **Do not restate contact details (19).** No "I can be reached at". The header
+  carries email, phone and LinkedIn; repeating them wastes a line and implies the
+  reader could not find them. (This supersedes the withdrawn rule 15, which had
+  asked for the opposite.)
+
+### V. Active voice, varied subject (20, 27)
+
+The pair most likely to fight, so hold both at once.
+
+- **Active voice (20).** The subject performs the verb. Not "that problem is where
+  my co-op terms have been spent" but "I spent my co-op terms solving it".
+- **Vary the subject off "I" (27).** A column of "I built / I consolidated / I
+  owned" is monotonous and self-centred.
+
+The resolution is a **varied active subject**: the project, the model, or the
+result does the work, and still acts.
+
+> "I built dashboards. I moved reporting to self-serve. I saved six hours." Active,
+> but three I-openers (27).
+>
+> "Dashboards I built now serve 500 users, saving the analysts six hours a week."
+> The subject is the dashboards, and they act. Passes both.
+
+Never resolve 27 by going passive. A passive sentence fails 20 no matter whose
+name is absent from it.
+
+### VI. One clean read (3, 12, 22, 23, 24, 28)
+
+Every sentence lands on the first pass. This is a single standard; the rules below
+are the specific ways letters have failed it.
+
+- **No word salad (3).** If a sentence needs a second read, cut it. "What a single
+  line cannot show is the choice I would actually bring, which was the baseline"
+  is the original offender.
+- **Plain business English, but do not patronize (12, 23).** Translate academic
+  jargon, "majority class baseline", "held-out set", "hyperparameter" (12). But do
+  not over-correct into explaining a baseline to someone who screens on them (23):
+  "94 percent against a 71 percent baseline" is right; "simply guessing the most
+  common category got 71" talks down to the reader.
+- **Clean phrasing, especially for numbers (22, 28).** If a phrase is awkward,
+  kill it (22): "cost 9 percent of it" becomes "caused a 9 percent drop". A metric
+  must land in one read (28): "removed 23 percent of records as duplicates that
+  had overstated price moves" becomes "eliminated a 23 percent duplication rate
+  that was inflating price moves".
+- **Proofread for missing words (24).** "Removing 23 percent duplicate records"
+  reads as a typo. A data scientist who drops words reads as one who drops lines
+  of code.
+
+### VII. Prose that flows (17, 18, 21, 29, 30, 31)
+
+Grammatical is not enough; the letter has to read well aloud.
+
+- **Real transitions, not noir fragments (17).** "Pricing came with the same job."
+  / "Cataloguing was the other half of it." Weave accomplishments together.
+- **Precise vocabulary, not literary approximation (18).** A font is legible; a
+  portfolio is *manageable* or *scalable*. Do not reach for a word that almost
+  fits.
+- **Do not end a sentence on a preposition (21).** "The rule the business had been
+  running on" becomes "the business's legacy reorder rule".
+- **Time saved is an achievement, not an object (29).** Not "returned six hours to
+  the analysts" but "saved the analysts six hours each week".
+- **Analytical verbs, not spatial ones (30).** Data *drives*, *feeds* or
+  *supports* a forecast; it does not sit "underneath" one.
+- **Vary the rhythm (31).** Three sentences of the same length in a row put the
+  reader to sleep. Break one deliberately.
 
 ---
 
-## What the letter adds, given it cannot restate the CV
+## Citing the CV is not restating it
 
-Two constraints now sit next to each other, and reconciling them is the hard part
-of writing one of these:
-
-- The letter must not repeat the CV. `check_no_cv_copy` hard-fails on a run of
-  seven consecutive words shared with the rendered CV.
-- The letter must lead with hard metrics, and those metrics are on the CV.
-
-**These do not conflict, because citing a result is not restating a bullet.** The
-CV lists what happened. The letter says which of those results matters here and
-what it would be worth to this employer. So:
-
-| The CV does this | The letter does this |
-|---|---|
-| Lists every result, role by role | Picks the two or three that fit this posting |
-| States the outcome | States why that outcome is relevant to this business |
-| Complete history | An argument for one job |
-
-The added value is **selection and relevance**, not methodology. Naming the
-number is required. Explaining how you got it is rule 2.
-
-**Never invent a metric.** Every figure in the letter must appear on the rendered
-CV. The CV pipeline bans unattributed dollar amounts for the same reason
-(`SKILL.md` T4): a figure nobody can source is the loudest fabrication tell there
-is. If the CV has no dollar figure, the letter has no dollar figure.
+The build hard-fails on a run of seven consecutive words shared with the rendered
+CV (`check_no_cv_copy`), yet principle I demands the CV's own metrics. These do
+not conflict: the CV *lists* what happened, the letter *selects* the two or three
+results that fit this posting and says why they matter here. Name the number
+(required); do not reproduce the bullet's sentence, and do not explain how you got
+it (that is lecturing, principle I). When the copy check fires, the sentence was
+restating rather than selecting; rewrite it toward relevance, not around the
+seven-word window.
 
 ---
 
 ## Structure
 
-Three paragraphs, 220 to 400 words of body. Shorter is usually better under these
-rules; `build_cover_letter.py` warns outside the band and hard-fails past one
-page.
+Three or four paragraphs, 220 to 400 words of body. Shorter is usually better;
+`build_cover_letter.py` warns outside the band and hard-fails past one page.
 
-**Opening (3 to 4 sentences).** Lead with your single strongest result that maps
-to what this role centrally does. The number goes in the first or second
-sentence. Name the role and company once, briefly, so the letter is filed
-correctly. Nothing else.
+**Opening (3 to 4 sentences).** Open on the tailored hook: one researched thing
+about how this employer's business works, framed as a problem, that would be
+false of its competitor. Name the role and company in the second sentence. Then
+transition into your strongest matching result, with its number.
 
-Do not open with "I am writing to apply for the position of". Do not open by
-describing what the company or the team does.
+That order matters. Insight, then the role, then proof. No "I am applying for"
+(rule 16), no bare statistic (rule 11), no describing their business back to them
+(rule 1).
 
-**Middle (4 to 6 sentences).** Two or three more results, each with its metric,
-each chosen because the posting asks for that thing. One short clause per result
-connecting it to their business is enough. Resist the second clause: that is
-where lecturing starts.
+**Middle (one or two paragraphs, 4 to 6 sentences).** Two or three more results,
+each with its metric, each inside a sentence that says why it matters to this
+employer. Not a list. If you can reorder the sentences freely with no loss, you
+have written a robot resume (rule 10).
 
-**Close (2 to 3 sentences).** A standard call to action framed around the value
-you would deliver. Thank them once. Stop.
+End each metric on the metric. No trailing lesson (rule 13).
+
+**Close (2 sentences).** A standard call to action framed around the value you
+would deliver. Thank them once. Stop. Do not restate your contact details
+(rule 19) and do not propose to review their processes (rule 9).
 
 ---
 
@@ -141,20 +233,50 @@ more naturally in prose than in a bullet. Either form is acceptable.
 
 ## Failure table
 
+Grouped by principle. The rule number in the middle column is what the build
+reports.
+
 | Failure | Rule | Fix |
 |---|---|---|
-| First paragraph summarizes the posting | 1 | Open with your strongest metric |
-| "I am writing to apply for the position of..." | 1 | Cut it; lead with the result |
+| **I. Say something the CV cannot** | | |
+| First paragraph summarizes the posting | 1 | Tailored hook, then the metric |
 | A paragraph comparing modeling approaches | 2 | Replace with an outcome |
-| A sentence needing two reads | 3 | Split it or delete it |
 | A claim with no number attached | 4 | Add the metric or cut the claim |
-| A number not on the CV | 4 | Remove it. Never invent a figure |
+| Adjective stacking: passionate, driven, detail-oriented | 5 | Replace with a result |
+| Paragraph reads as reordered resume bullets | 10 | Each metric inside a why-it-matters-here sentence |
+| A lesson tacked after a good number | 13 | Period after the metric. Move on |
+| "stays manageable only when..." | 25 | State what you did, not the general law |
+| **II. Stay grounded and honest** | | |
 | "no direct experience, but I have a specific view" | 6 | Delete both halves |
 | Calling a normal business practice wrong | 7 | Delete |
 | A personal project standing in for enterprise scale | 8 | Use employment evidence |
-| Closing by proposing to review their processes | 9 | Standard call to action |
-| Adjective stacking: passionate, driven, detail-oriented | 5 | Replace with a result |
+| Works verbatim for a competitor | 14 | Add a claim true of this employer, false of the other |
+| A number not on the CV | 4 | Remove it. Never invent a figure |
+| **III. The opening** | | |
+| Opening on a bare statistic, no lead-in | 11 | Tailored hook sentence first |
+| "I am applying for the position of..." | 16 | Cut it; open on the researched hook |
 | Explaining the company's business back to them | 1 | Cut it |
+| **IV. The close** | | |
+| Closing by proposing to review their processes | 9 | Standard call to action |
+| "I can be reached at..." | 19 | Cut it. The header has it |
+| "how I could contribute" | 26 | "how my background will directly contribute" |
+| **V. Active voice, varied subject** | | |
+| "where my co-op terms have been spent" | 20 | "I spent my co-op terms..." |
+| Three sentences in a row opening "I..." | 27 | Move the subject to the project or result |
+| **VI. One clean read** | | |
+| A sentence needing two reads | 3 | Split it or delete it |
+| "majority class baseline", "held-out set" | 12 | Plain English, without talking down |
+| "cost 9 percent of it" | 22 | "caused a 9 percent drop in accuracy" |
+| "simply guessing the most common category" | 23 | "against a 71 percent baseline" |
+| "removing 23 percent duplicate records" | 24 | "removing 23 percent of records as duplicates" |
+| "removed 23 percent of records as duplicates that..." | 28 | "eliminated a 23 percent duplication rate that..." |
+| **VII. Prose that flows** | | |
+| "Pricing came with the same job." | 17 | Real transitions, not fragments |
+| "the portfolio stays legible" | 18 | "manageable", "scalable" — the standard term |
+| Sentence ending "...had been running on" | 21 | "the business's legacy reorder rule" |
+| "returned six hours a week to the analysts" | 29 | "saved the analysts six hours each week" |
+| "the data underneath those forecasts" | 30 | "the data that feeds those forecasts" |
+| Three consecutive sentences of equal length | 31 | Vary one deliberately |
 
 ---
 

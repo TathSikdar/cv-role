@@ -7,7 +7,7 @@ credibility*, not keyword presence — the ATS pass already happened.
 ## Inputs
 
 - `build/<slug>/<slug>.txt` — the CV as extracted from the rendered PDF.
-- `<slug>.pdf` — read this too if you can; you are a human reader and visual
+- `base-cv/<slug>.pdf` — read this too if you can; you are a human reader and visual
   density, whitespace, and page count are legitimately part of your judgment.
 - `config/job-listings/<slug>.md` — the roles you are screening against. Read
   the `## Verbatim listings` section: you need the postings' own language to
@@ -18,7 +18,7 @@ credibility*, not keyword presence — the ATS pass already happened.
 - `config/cv-config.yaml` — for `level`.
 
 **Do not read** `config/master_cv.md`, `build/<slug>/content.yaml`,
-`build/<slug>/keyword-coverage.md`, or any `*_analysis.md`. You are simulating a
+`build/<slug>/keyword-coverage.md`, or any `build/<slug>/analysis.md`. You are simulating a
 first read by someone with no context. If you have seen those files, say so in
 your output.
 
@@ -134,6 +134,29 @@ each project. For each entry, read its bullets in order, as a set, and ask:
     words to fill the line rather than adding a fact: "so that a silent unit
     could be read back rather than guessed at". The layout rules require a full
     second line; they do not license buying it with a gloss.
+- **Technical plausibility.** Every technology a bullet names must be used in a
+  way that is coherent with what that technology actually is. This is not tone
+  and not grammar: the sentence reads cleanly, which is exactly why the register
+  pass sails past it, but a technical screener catches it in seconds and it reads
+  as a candidate who does not understand their own stack. Read each bullet asking
+  only *could someone who knows this technology object to how it is used here?*
+  The failures, each disqualifying alone:
+  - **Wrong category of thing.** A runtime, framework, or tool described as a
+    language you "write in" or "code in". You write JavaScript that runs *on*
+    Node.js; you do not "write in Node.js". Same for "wrote it in React", "coded
+    in Docker".
+  - **A capability the technology does not have.** A component or interface
+    attributed to a tool that has no such thing: Tailwind is a CSS utility
+    framework, so a "Tailwind client", "Tailwind server", or "Tailwind API" is
+    nonsense; a "REST language" or a "Git database" is the same error.
+  - **A pairing that cannot hold.** A datastore or format asked to hold something
+    it structurally cannot: embeddings or vectors stored "in SQL" rather than a
+    vector store, a relational table called a message queue, JSON called a schema.
+  - **A purpose the technology cannot serve.** A library or protocol doing
+    something outside what it is: styling "with GraphQL", state managed "with
+    Nginx", tests "written in Prometheus".
+  If a bullet fails, it fails however fluent the line and however real the
+  underlying work.
 - **Non-redundancy.** No two bullets in the entry make the same claim, lead with
   the same technology, or report the same kind of metric. Two latency
   percentages under one employer read as one accomplishment split in half to
@@ -147,7 +170,7 @@ each project. For each entry, read its bullets in order, as a set, and ask:
 
 | Score | Anchor |
 |---|---|
-| 15 | Every entry passes the one-sentence test. Register is professional in every bullet judged on its own, and uniform across each entry. No redundancy inside any entry, and each entry's bullets read as facets of one job |
+| 15 | Every entry passes the one-sentence test. Register is professional in every bullet judged on its own, and uniform across each entry. Every technology is used in a way that is technically coherent. No redundancy inside any entry, and each entry's bullets read as facets of one job |
 | 8 | One entry reads as disconnected fragments, or there is one clear redundancy or register break |
 | 0 | Bullets are independently written lines assembled under headings; no entry describes a coherent job |
 
@@ -159,8 +182,14 @@ Deductions:
 - −2 per bullet carrying colloquial diction, marketing voice, first person, or a
   padding gloss, counted once per bullet however many it holds
 - −2 per bullet carrying an unanchored or resumptive pronoun
+- −2 per bullet naming a technology used in a technically incoherent way (wrong
+  category of thing, a capability it lacks, an impossible pairing, or a purpose
+  it cannot serve), max −4. This is a technical-plausibility defect, not a
+  register one: it sits outside the −6 register cap below and is scored here and
+  not again as internal inconsistency under red flags.
 - −1 per bullet that has to be read twice to parse
-- **The three absolute deductions above total at most −6 for the category.**
+- **The three absolute register defects (colloquial/marketing/first-person/gloss,
+  pronoun, garden path) total at most −6 for the category.**
 
 The cap is deliberate. Uncapped, a CV with two badly worded bullets loses enough
 here to trip `loop.regression_abort_delta` in one pass, which abandons the role
@@ -243,11 +272,18 @@ The `Register` cell is `OK`, or it names the defect and quotes the span:
 store staff"`, `padding gloss: "rather than guessed at"`. Judge every bullet
 against plain professional English here, not against the bullets beside it.
 
-| # | Bullet (first 40 chars) | Register | Redundancy | Fits the set |
-|---|---|---|---|---|
-| 1 | Reduced model training time by 40% by... | OK | OK | OK |
-| 2 | Ported the diagnostic console onto the 4... | colloquial: "off the floor" | OK | OK |
-| 3 | Cut inference latency 30% by rewriting... | OK | same metric type as 1 | weak |
+The `Tech use` cell is `OK`, or it names the incoherent usage and quotes the
+span: `wrong category: "write in Node.js"`, `no such capability: "Tailwind
+client"`, `impossible pairing: "vectors in SQL"`, `wrong purpose: "styling with
+GraphQL"`. Judge whether someone who knows the technology would object, not
+whether the sentence reads cleanly.
+
+| # | Bullet (first 40 chars) | Register | Tech use | Redundancy | Fits the set |
+|---|---|---|---|---|---|
+| 1 | Reduced model training time by 40% by... | OK | OK | OK | OK |
+| 2 | Ported the diagnostic console onto the 4... | colloquial: "off the floor" | OK | OK | OK |
+| 3 | Built a Node.js REST service by writing... | OK | wrong category: "write in Node.js" | OK | OK |
+| 4 | Cut inference latency 30% by rewriting... | OK | OK | same metric type as 1 | weak |
 
 ### Deductions taken
 <category — points — reason, one per line>

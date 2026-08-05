@@ -46,6 +46,22 @@ canonical:
   "time series": ["time-series", "timeseries"]
   "feature engineering": ["feature extraction"]
 
+  # --- actuarial ---
+  # Named actuarial modelling platforms stay distinct rows: Prophet, AXIS,
+  # MoSes, MG-ALFA, RAFM, ResQ, Emblem, Radar, ReMetrica and Igloo are separate
+  # products, and merging them would credit the CV for software a posting did
+  # not name. Only spelling variants of the SAME product are aliased.
+  "AXIS": ["ggy axis", "ggy-axis", "ggy", "moody's axis", "moodys axis"]
+  "Prophet": ["fis prophet"]
+  "Excel": ["microsoft excel", "ms excel", "advanced excel"]
+  "Power BI": [powerbi, "power-bi", "microsoft power bi"]
+  # "actuarial modeling" is aliased narrowly. Bare "modeling"/"modelling" is NOT
+  # merged here: it is too generic and the synonym file is shared across every
+  # role, so a global merge would wrongly fold generic modelling into the
+  # actuarial row. Benchmark tech lines spell the actuarial form out in full.
+  "actuarial modeling": ["actuarial modelling", "actuarial models"]
+  "experience analysis": ["experience studies", "experience study", "experience analyses"]
+
   # --- platforms and infrastructure ---
   "AWS": ["amazon web services"]
   "GCP": ["google cloud", "google cloud platform"]
@@ -84,6 +100,29 @@ canonical:
   "Next.js": [nextjs]
   "CSS": [css3]
   "HTML": [html5]
+  "Vue": ["vue.js", vuejs, "vue 3", vue3]
+  # AngularJS (v1) and Angular (2+) are technically distinct, but postings use
+  # the names loosely and the candidate can claim neither, so merging keeps the
+  # framework-demand signal in one row instead of splitting it.
+  "Angular": [angularjs, "angular.js", "angular js"]
+  "Tailwind": ["tailwind css", tailwindcss]
+  "Sass": [scss, "sass/scss"]
+  "Redux": ["redux toolkit", "@reduxjs/toolkit"]
+  "Material UI": ["material-ui", mui, "material ui"]
+  "styled-components": ["styled components"]
+  # A11y vocabulary collapses to one CRITICAL frontend requirement: WCAG, ARIA,
+  # and Section 508 are how postings spell "the UI must be accessible".
+  "accessibility": [a11y, wcag, "wcag 2.1", "wcag 2.2", "wcag 2.1 aa",
+                    aria, "web accessibility", "web accessibility standards",
+                    "section 508"]
+  "responsive design": ["responsive design frameworks", "responsive applications",
+                        "responsive web design", "responsive layouts"]
+  "design systems": ["design system"]
+  "component libraries": ["component library"]
+  "cross-browser": ["cross-browser compatibility", "cross browser",
+                    "cross-browser compatibility testing"]
+  "performance optimization": ["frontend performance optimization",
+                              "web performance", "frontend performance"]
 
   # --- practice ---
   "Agile": [scrum, "agile methodology", "agile development"]

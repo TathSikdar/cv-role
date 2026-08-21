@@ -182,6 +182,21 @@ Rewrite any answer that fails:
   A small amount of unevenness is correct. A specific, slightly odd detail is the
   strongest signal a person wrote it, and it is usually available in
   `config/master_cv.md`.
+- **A10 No comparison.** An answer states what is true. It never sets up a foil
+  first: not "most companies do X, you do Y", not "unlike a typical Z", not "most
+  tests sell a snapshot, Tiny Health measures over time". Delete the foil and
+  keep the second half.
+
+  This fails for two reasons. The foil is almost always an unsourced claim about
+  companies you did not research, which breaks A1. And the reader hears you rank
+  their competitors before you have said anything about them, which is a strange
+  thing to do in the first line of an application.
+
+  **It does not weaken A3.** The swap test asks that the answer be false of the
+  competitor, not that the competitor appear in it. Name the specific thing this
+  employer does, with enough detail that it could only be them, and the contrast
+  happens in the reader's head where it belongs. A named study, a stated
+  resolution, or a published number does this. "Unlike most companies" does not.
 
 ## Step 5 — Write and report
 

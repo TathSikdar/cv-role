@@ -25,6 +25,12 @@ grades them through ATS + recruiter review loops.
   fetched listing only, never the master CV. `interview-technical` doubles as a
   defensibility audit — it flags where the invented projects will crack under
   probing.
+- **To answer an application form's free-text questions, invoke the
+  `application-questions` skill.** It is the one skill that *may* read
+  `config/master_cv.md` and `build/<slug>/content.yaml`, because a form asks what
+  a one-page CV had no room for. The split: the rendered CV supplies the numbers
+  and remains the consistency baseline, the master CV supplies the story. Answers
+  are deliberately short, must not restate the CV, and must not read as generated.
 - **Every CV and cover letter has a Canadian (default) and a US header.** The
   only difference is the line under the name — `contact_line` vs
   `contact_line_us` in `config/frozen.yaml`; the body is identical. Make the US

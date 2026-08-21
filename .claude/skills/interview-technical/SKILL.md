@@ -27,7 +27,7 @@ CV has been built for the slug, stop and say so. `id` is the company, lowercased
 and hyphenated, no legal suffix; reuse the cover letter's `letter-id` if one
 exists for this company and slug.
 
-## The evidence rule (identical to cover-letter / application-questions)
+## The evidence rule (identical to cover-letter)
 
 - **Never read `config/master_cv.md`, `build/<slug>/content.yaml`, or
   `generation-notes.md`.** Read `build/<slug>/<slug>.txt`. The interviewer has the

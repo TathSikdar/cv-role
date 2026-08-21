@@ -93,6 +93,8 @@ canonical:
   "oscilloscope": [scope, "logic analyzer"]
   "DSP": ["digital signal processing"]
   "embedded C": ["embedded c programming"]
+  "microcontrollers": [mcu, mcus, microcontroller, "micro-controller", uc]
+  "hardware-in-the-loop": [hil, "hardware in the loop"]
 
   # --- web ---
   "React": ["react.js", reactjs]

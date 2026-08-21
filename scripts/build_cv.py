@@ -304,6 +304,32 @@ def run_tectonic(tex_path: Path) -> None:
         raise BuildError(f"tectonic failed:\n{tail}")
 
 
+def check_overfull(pdf_path: Path, config: dict) -> list[str]:
+    """Catch text running past the right margin.
+
+    measure_bullets cannot see this: it derives the right edge from the widest
+    line on the page, so an overrunning line defines the margin and hides
+    itself. LaTeX already measures it properly and writes it to the log, which
+    is the only place horizontal overrun is reported honestly.
+    """
+    log_path = pdf_path.with_suffix(".log")
+    if not log_path.exists():
+        return []
+    # ponytail: 2pt tolerance because LaTeX reports hairline overruns that are
+    # invisible in the PDF. Raise it in cv-config layout if the template starts
+    # emitting noise; lower it to 0 to see every one.
+    tol = (config.get("layout") or {}).get("overfull_tolerance_pt", 2.0)
+    failures = []
+    log = log_path.read_text(encoding="utf-8", errors="replace")
+    for pt, where in re.findall(r"Overfull \\hbox \(([\d.]+)pt too wide\)(.*)", log):
+        if float(pt) >= tol:
+            failures.append(
+                f"text runs {float(pt):.1f}pt past the right margin"
+                f"{(' ' + where.strip()) if where.strip() else ''} — shorten that line"
+            )
+    return failures
+
+
 def run_pdftotext(pdf_path: Path, txt_path: Path) -> str:
     if not shutil.which("pdftotext"):
         raise BuildError("pdftotext not found on PATH (install poppler-utils)")
@@ -1035,6 +1061,8 @@ def main(argv: list[str]) -> int:
     fit_failures, fit_report = measure_fit(pdf_path, config)
     print(f"[info] page fit: {fit_report}")
 
+    overfull_failures = check_overfull(pdf_path, config)
+
     if spacing_failures:
         print("[FAIL] line spacing:")
         for f in spacing_failures:
@@ -1047,7 +1075,11 @@ def main(argv: list[str]) -> int:
         print("[FAIL] page fit:")
         for f in fit_failures:
             print(f"  - {f}")
-    if spacing_failures or bullet_failures or fit_failures:
+    if overfull_failures:
+        print("[FAIL] margin overrun:")
+        for f in overfull_failures:
+            print(f"  - {f}")
+    if spacing_failures or bullet_failures or fit_failures or overfull_failures:
         return 1
     print(f"[ok]   spacing (intra {spacing.intra:.1f}pt < inter "
           f"{spacing.inter:.1f}pt), bullet lengths, and page fit all within budget")

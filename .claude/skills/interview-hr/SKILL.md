@@ -29,7 +29,7 @@ without one. `id` is the company, lowercased and hyphenated, no legal suffix
 (`Acme Robotics Inc.` -> `acme-robotics`); reuse the cover letter's `letter-id`
 if one exists for this company and slug.
 
-## The evidence rule (identical to cover-letter / application-questions)
+## The evidence rule (identical to cover-letter)
 
 - **Never read `config/master_cv.md`, `build/<slug>/content.yaml`, or
   `generation-notes.md`.** Read `build/<slug>/<slug>.txt` — what a reader with the
